@@ -39,6 +39,15 @@ export default defineConfig(async (merge, { command, mode }) => {
 
           }
         },
+        pxtorem: {
+          enable: true,
+          config: {
+            rootValue: 37.5, // 根据设计稿宽度除以10进行设置
+            propList: ['*'], // 所有属性都转换
+            selectorBlackList: [], // 过滤掉的选择器
+            minPixelValue: 1 // 最小的转换数值
+          }
+        },
         cssModules: {
           enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
           config: {
@@ -64,6 +73,15 @@ export default defineConfig(async (merge, { command, mode }) => {
         autoprefixer: {
           enable: true,
           config: {}
+        },
+        pxtorem: {
+          enable: true,
+          config: {
+            rootValue: 37.5,
+            propList: ['*'],
+            selectorBlackList: [],
+            minPixelValue: 1
+          }
         },
         cssModules: {
           enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true

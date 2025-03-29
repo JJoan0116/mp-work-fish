@@ -1,0 +1,211 @@
+.diary-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  background-color: #FFFFFF;
+  
+  .header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #F0F0F0;
+    
+    .title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #3498DB;
+    }
+    
+    .total-stats {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      
+      .stats-item {
+        font-size: 12px;
+        color: #8395A7;
+        margin-bottom: 5px;
+        
+        .value {
+          font-weight: bold;
+          color: #3498DB;
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+  
+  .calendar-section {
+    padding: 15px;
+    
+    .month-selector {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      
+      .month-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #8395A7;
+      }
+      
+      .month-actions {
+        display: flex;
+        
+        .month-action {
+          width: 30px;
+          height: 30px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #F8F9FA;
+          border-radius: 50%;
+          margin-left: 10px;
+        }
+      }
+    }
+    
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      
+      .weekday-label {
+        text-align: center;
+        font-size: 12px;
+        color: #8395A7;
+        margin-bottom: 10px;
+      }
+      
+      .day-cell {
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+        background-color: #F8F9FA;
+        
+        .day-number {
+          font-size: 14px;
+          font-weight: bold;
+          color: #8395A7;
+        }
+        
+        .day-indicator {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: #3498DB;
+          margin-top: 5px;
+        }
+        
+        &.active {
+          background-color: #3498DB;
+          
+          .day-number {
+            color: #FFFFFF;
+          }
+          
+          .day-indicator {
+            background-color: #FFFFFF;
+          }
+        }
+      }
+    }
+  }
+  
+  .diary-list {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    
+    .diary-item {
+      background-color: #F8F9FA;
+      border-radius: 24px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      
+      .diary-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        
+        .diary-date {
+          font-size: 14px;
+          font-weight: bold;
+          color: #3498DB;
+        }
+        
+        .diary-total {
+          font-size: 12px;
+          color: #8395A7;
+        }
+      }
+      
+      .diary-content {
+        .activity-item {
+          display: flex;
+          justify-content: space-between;
+          padding: 8px 0;
+          border-bottom: 1px solid #F0F0F0;
+          
+          &:last-child {
+            border-bottom: none;
+          }
+          
+          .activity-type {
+            display: flex;
+            align-items: center;
+            
+            .activity-icon {
+              font-size: 16px;
+              margin-right: 8px;
+            }
+            
+            .activity-name {
+              font-size: 14px;
+              color: #8395A7;
+            }
+          }
+          
+          .activity-duration {
+            font-size: 14px;
+            font-weight: bold;
+            color: #3498DB;
+          }
+        }
+      }
+      
+      .diary-summary {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed #F0F0F0;
+        display: flex;
+        justify-content: space-between;
+        
+        .summary-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          
+          .summary-label {
+            font-size: 12px;
+            color: #8395A7;
+            margin-bottom: 5px;
+          }
+          
+          .summary-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #3498DB;
+          }
+        }
+      }
+    }
+  }
+}

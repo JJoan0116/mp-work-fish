@@ -1,11 +1,17 @@
 import { Component } from 'react'
+import { initRem } from './utils/rem'
 
 import './app.scss'
 
 
   class App extends Component {
 
-  componentDidMount () {}
+  componentDidMount () {
+    // 初始化rem适配
+    if (['h5' ,'weapp'].includes(process.env.TARO_ENV)) {
+      initRem()
+    }
+  }
 
   componentDidShow () {}
 
