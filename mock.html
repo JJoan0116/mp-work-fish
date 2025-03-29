@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摸鱼计时器</title>
+    <style>
+        :root {
+            --brand-blue: #3498DB;
+            --gray: #8395A7;
+            --orange: #E67E22;
+            --white: #FFFFFF;
+            --light-gray: #F8F9FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app {
+            width: 100vw;
+            height: 100vh;
+            margin: 0 auto;
+            padding: 12px;
+            display: flex;
+            gap: 16px;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+        }
+
+        /* 顶部状态卡片 */
+        .status-cards {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-card {
+            width: 48%;
+            background: var(--white);
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .status-card h3 {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .toggle-visibility {
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .toggle-visibility:hover {
+            opacity: 1;
+        }
+
+        .amount {
+            font-size: 24px;
+            color: var(--brand-blue);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: -0.5px;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 主功能区 */
+        .main-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        /* 时钟圆环 */
+        .clock-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 功能按钮组 */
+        .action-buttons {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn span {
+            display: block;
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .action-btn .count {
+            display: block;
+            font-size: 14px;
+            color: var(--brand-blue);
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .clock-ring {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            position: relative;
+            background: conic-gradient(#BDE3F7 0%, #3498DB 60%, var(--light-gray) 60%);
+        }
+
+        .clock-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .clock-time {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--brand-blue);
+        }
+
+        .clock-remain {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        /* 摸鱼记录 */
+        .record-section {
+            width: 100%;
+            flex: 1;
+            overflow: auto;
+            /* height: 22%; */
+            /* margin-bottom: 16px; */
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .record-title {
+            font-size: 16px;
+            color: var(--gray);
+        }
+
+        .record-total {
+            font-size: 14px;
+            color: var(--brand-blue);
+        }
+
+        .record-list {
+            height: calc(100% - 40px);
+            overflow-y: auto;
+        }
+
+        .record-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: var(--light-gray);
+            border-radius: 24px;
+            margin-bottom: 8px;
+        }
+
+        .record-time {
+            font-size: 14px;
+            color: var(--gray);
+            margin-right: 16px;
+        }
+
+        .record-type {
+            font-size: 14px;
+            color: var(--brand-blue);
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            height: 8%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 32px;
+            border-top: 1px solid var(--light-gray);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: max-content;
+        }
+
+        .tab {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 12px 0;
+
+        }
+
+        .tab.active {
+            color: var(--brand-blue);
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <!-- 顶部状态卡片 -->
+        <div class="status-cards">
+            <div class="status-card">
+                <div class="card-header">
+                    <h3>今日摸鱼金额</h3>
+                    <span class="toggle-visibility" onclick="toggleAmount(this)">☆</span>
+                </div>
+                <div class="amount">¥ ****</div>
+            </div>
+            <div class="status-card">
+                <div class="card-header">
+                    <h3>今日工资收入</h3>
+                    <span class="toggle-visibility" onclick="toggleAmount(this)">☆</span>
+                </div>
+                <div class="amount">¥ 328.50</div>
+            </div>
+        </div>
+
+        <!-- 主功能区 -->
+        <div class="main-content">
+            <!-- 时钟圆环 -->
+            <div class="clock-container">
+                <div class="clock-ring">
+                    <div class="clock-inner">
+                        <div class="clock-time">14:30</div>
+                        <div class="clock-remain">距离下班还有3.5h</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能按钮组 -->
+            <div class="action-buttons">
+                <div class="action-btn"><span>带薪摸鱼🐟</span>
+                    <div class="count">12次</div>
+                </div>
+                <div class="action-btn"><span>带薪蹲坑🚽</span>
+                    <div class="count">8次</div>
+                </div>
+                <div class="action-btn"><span>带薪喝水🥤</span>
+                    <div class="count">15次</div>
+                </div>
+                <div class="action-btn"><span>带薪聊天🌙</span>
+                    <div class="count">5次</div>
+                </div>
+            </div>
+
+            <!-- 状态组 -->
+            <div class="action-buttons">
+                <div class="action-btn"><span>距离发钱💰</span>
+                    <div class="count">15天</div>
+                </div>
+                <div class="action-btn"><span>距离周末📅</span>
+                    <div class="count">3天</div>
+                </div>
+                <div class="action-btn"><span>距离放假🎁</span>
+                    <div class="count">45天</div>
+                </div>
+                <div class="action-btn"><span>距离退休🏖️</span>
+                    <div class="count">20年</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 摸鱼记录 -->
+        <div class="record-section">
+            <div class="record-header">
+                <div class="record-title">今日摸鱼记录</div>
+                <div class="record-total">共计: 2小时30分</div>
+            </div>
+            <div class="record-list">
+                <div class="record-item">
+                    <div class="record-time">14:00</div>
+                    <div class="record-type">🐟 带薪摸鱼 30分钟</div>
+                </div>
+                <div class="record-item">
+                    <div class="record-time">11:30</div>
+                    <div class="record-type">🚽 带薪蹲坑 15分钟</div>
+                </div>
+                <div class="record-item">
+                    <div class="record-time">10:00</div>
+                    <div class="record-type">🥤 带薪喝水 10分钟</div>
+                </div>
+                <div class="record-item">
+                    <div class="record-time">10:00</div>
+                    <div class="record-type">🥤 带薪喝水 10分钟</div>
+                </div>
+                <div class="record-item">
+                    <div class="record-time">10:00</div>
+                    <div class="record-type">🥤 带薪喝水 10分钟</div>
+                </div>
+                <div class="record-item">
+                    <div class="record-time">10:00</div>
+                    <div class="record-type">🥤 带薪喝水 10分钟</div>
+                </div>
+                <div class="record-item">
+                    <div class="record-time">10:00</div>
+                    <div class="record-type">🥤 带薪喝水 10分钟</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部导航 -->
+        <!-- <div class="bottom-nav">
+            <div class="tab active">今日摸鱼</div>
+            <div class="tab">摸鱼报告</div>
+        </div> -->
+    </div>
+    <script>
+        function toggleAmount(element) {
+            const amountElement = element.closest('.status-card').querySelector('.amount');
+            const currentText = amountElement.textContent;
+            const hiddenText = '¥ ****';
+            const originalText = amountElement.dataset.amount || '¥ 328.50';
+
+            if (!amountElement.dataset.amount) {
+                amountElement.dataset.amount = originalText;
+            }
+
+            if (currentText === hiddenText) {
+                amountElement.textContent = amountElement.dataset.amount;
+                element.textContent = '☆';
+                element.style.opacity = '1';
+            } else {
+                amountElement.textContent = hiddenText;
+                element.textContent = '★';
+                element.style.opacity = '0.7';
+            }
+        }
+    </script>
+</body>
+
+</html>
