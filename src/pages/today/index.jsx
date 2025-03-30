@@ -3,6 +3,8 @@ import { View, Text, Image } from '@tarojs/components'
 import { AtModal, AtModalContent, AtModalAction, AtInputNumber, AtModalHeader, AtButton, AtSwipeAction} from 'taro-ui'
 import Taro from '@tarojs/taro'
 import dayjs from 'dayjs'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+dayjs.extend(isSameOrAfter)
 import './index.scss'
 
 export default class Today extends Component {
@@ -24,6 +26,16 @@ export default class Today extends Component {
       timeToOffWork: '0',
       // 发薪日设置
       payDay: 10,
+      // 法定节假日信息
+      holidays: [
+        { name: '元旦', date: '2025-01-01' },
+        { name: '春节', date: '2025-01-29' },
+        { name: '清明节', date: '2025-04-04' },
+        { name: '劳动节', date: '2025-05-01' },
+        { name: '端午节', date: '2025-05-31' },
+        { name: '中秋节', date: '2025-09-06' },
+        { name: '国庆节', date: '2025-10-01' }
+      ],
       // 四个功能按钮的数据
       activities: [
         { type: 'FISH', label: '带薪摸鱼', icon: <View className='iconfont icon-touch-fish'></View>, count: 0 },
@@ -47,6 +59,7 @@ export default class Today extends Component {
   componentDidMount() {
     // 实际应用中应该获取真实数据
     this.calculateDaysToPayday()
+    this.calculateHolidays()
     this.updateCurrentTime()
     // 如果已经下班，不启动定时器
     const now = new Date()
@@ -62,6 +75,26 @@ export default class Today extends Component {
   componentWillUnmount() {
     if (this.timer) {
       clearInterval(this.timer)
+    }
+  }
+
+  calculateHolidays() {
+    const today = dayjs().startOf('day')
+    const { holidays } = this.state
+    
+    // 找到下一个最近的节假日
+    const nextHoliday = holidays
+      .map(holiday => ({ ...holiday, date: dayjs(holiday.date).startOf('day') }))
+      .filter(holiday => dayjs(holiday.date).isSameOrAfter(today))
+      .sort((a, b) => dayjs(a.date).diff(today, 'day') - dayjs(b.date).diff(today, 'day'))[0]
+    
+      // holidays.find(holiday => dayjs(holiday.date) > dayjs())
+      console.log(`nextHoliday 下一个最近的节假日是 ${nextHoliday?.name}，距离今天还有 ${nextHoliday?.date.diff(today, 'day')} 天`)
+    if (nextHoliday) {
+      const daysToHoliday = nextHoliday.date.diff(today, 'day')
+      const statusItems = [...this.state.statusItems]
+      statusItems[2] = { ...statusItems[2], value: daysToHoliday.toString() }
+      this.setState({ statusItems })
     }
   }
 
