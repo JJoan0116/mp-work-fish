@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import { initRem } from './utils/rem'
 import 'taro-ui/dist/style/index.scss'
+import './assets/iconfont/iconfont.css'
 import './app.scss'
 
 

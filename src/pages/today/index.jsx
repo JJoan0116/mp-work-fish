@@ -23,15 +23,16 @@ export default class Today extends Component {
       timeToOffWork: '0',
       // 四个功能按钮的数据
       activities: [
-        { type: 'FISH', label: '带薪摸鱼', icon: '🐟', count: 0 },
-        { type: 'TOILET', label: '带薪蹲坑', icon: '🚽', count: 0 },
-        { type: 'DRINK', label: '带薪喝水', icon: '🥤', count: 0 },
+            
+        { type: 'FISH', label: '带薪摸鱼', icon: <View className='iconfont icon-touch-fish'></View>, count: 0 },
+        { type: 'TOILET', label: '带薪蹲坑', icon: <View className='iconfont icon-matong'></View>, count: 0 },
+        { type: 'DRINK', label: '带薪喝水', icon: <View className='iconfont icon-heshui'></View>, count: 0 },
       ],
       // 四个状态指标
       statusItems: [
-        { label: '距离发钱', icon: '💰', value: '0天' },
-        { label: '距离周末', icon: '📅', value: '0天' },
-        { label: '距离放假', icon: '🎁', value: '0天' },
+        { label: '距离发钱', icon: <View className='iconfont icon-qian'></View>, value: '0天' },
+        { label: '距离周末', icon: <View className='iconfont icon-icon'></View>, value: '0天' },
+        { label: '距离放假', icon: <View className='iconfont icon-qingzhu1'></View>, value: '0天' },
       ],
       // 摸鱼记录
       fishRecords: [
@@ -230,7 +231,7 @@ export default class Today extends Component {
     const newRecord = {
       time: currentTime,
       type: currentActivityType,
-      icon: activities.find(a => a.type === currentActivityType)?.icon || '🐟',
+      icon: activities.find(a => a.type === currentActivityType)?.icon || <View className='iconfont icon-touch-fish'></View>,
       duration: `${duration}分钟`
     }
 
@@ -278,7 +279,9 @@ export default class Today extends Component {
           <View className='card fish-amount-card'>
             <View className='card-header'>
               <Text className='card-title'>今日摸鱼金额</Text>
-              <Text className='favorite-icon' onClick={() => this.toggleAmountVisibility('fish')}>👁</Text>
+              <View className='favorite-icon' onClick={() => this.toggleAmountVisibility('fish')}>
+              <View className={`iconfont ${showFishAmount ? 'icon-eye-close' : 'icon-eye'}`}></View>
+              </View>
             </View>
             <Text className='card-value'>¥ {showFishAmount ? todayFishAmount.toFixed(2) : '****'}</Text>
           </View>
@@ -286,7 +289,9 @@ export default class Today extends Component {
           <View className='card salary-card'>
             <View className='card-header'>
               <Text className='card-title'>今日工资收入</Text>
-              <Text className='favorite-icon' onClick={() => this.toggleAmountVisibility('salary')}>👁</Text>
+              <View className='favorite-icon' onClick={() => this.toggleAmountVisibility('salary')}>
+              <View className={`iconfont ${showSalary ? 'icon-eye-close' : 'icon-eye'}`}></View>
+              </View>
             </View>
             <Text className='card-value'>¥ {showSalary ? todaySalary.toFixed(2) : '****'}</Text>
           </View>
@@ -304,7 +309,7 @@ export default class Today extends Component {
         <View className='activity-section'>
           {activities.map((activity, index) => (
             <View key={index} className='activity-item' onClick={() => this.addActivity(activity.type)}>
-              <Text className='activity-icon'>{activity.label} {activity.icon}</Text>
+              <View className='activity-icon'>{activity.label} {activity.icon}</View>
               <Text className='activity-count'>{activity.count}分钟</Text>
             </View>
           ))}
@@ -314,7 +319,7 @@ export default class Today extends Component {
         <View className='status-section'>
           {statusItems.map((item, index) => (
             <View key={index} className='status-item'>
-              <Text className='status-label'>{item.label} {item.icon}</Text>
+              <View className='status-label'>{item.label} {item.icon}</View>
               <Text className='status-value'>{item.value}</Text>
             </View>
           ))}
@@ -342,8 +347,8 @@ export default class Today extends Component {
                 <View className='record-content-wrapper'>
                   <Text className='record-time'>{record.time}</Text>
                   <View className='record-content'>
-                    <Text className='record-icon'>{record.icon}</Text>
-                    <Text className='record-type'>{record.type}</Text>
+                    <View className='record-icon'>{record.icon}</View>
+                    <Text className='record-type'>{activities.find(a => a.type === record.type)?.label || '带薪摸鱼'}</Text>
                   </View>
                   <Text className='record-duration'>{record.duration}</Text>
                 </View>

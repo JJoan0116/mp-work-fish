@@ -7,6 +7,11 @@
   padding: 20px;
   box-sizing: border-box;
   
+  .iconfont {
+    font-size: 40px;
+    color: #8395a7;
+  }
+
   /* 顶部卡片区域 */
   .card-section {
     display: flex;
@@ -31,10 +36,10 @@
           color: #8395a7;
         }
         
-        .favorite-icon {
-          font-size: 36px;
-          color: #8395a7;
-        }
+        // .favorite-icon {
+          // font-size: 72px;
+          // color: #8395a7;
+        // }
       }
       
       .card-value {
@@ -220,6 +225,7 @@
     align-items: center;
     justify-content: space-between;
     pointer-events: none;
+    gap: 10px;
   }
 
   .record-time {

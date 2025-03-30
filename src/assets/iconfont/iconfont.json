@@ -1,0 +1,86 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "658035",
+      "name": "钱",
+      "font_class": "qian",
+      "unicode": "e662",
+      "unicode_decimal": 58978
+    },
+    {
+      "icon_id": "784528",
+      "name": "日历",
+      "font_class": "icon",
+      "unicode": "e65f",
+      "unicode_decimal": 58975
+    },
+    {
+      "icon_id": "4765896",
+      "name": "eye",
+      "font_class": "eye",
+      "unicode": "e78f",
+      "unicode_decimal": 59279
+    },
+    {
+      "icon_id": "8092167",
+      "name": "eye-close",
+      "font_class": "eye-close",
+      "unicode": "e8ff",
+      "unicode_decimal": 59647
+    },
+    {
+      "icon_id": "17384460",
+      "name": "庆祝",
+      "font_class": "qingzhu",
+      "unicode": "e765",
+      "unicode_decimal": 59237
+    },
+    {
+      "icon_id": "18654671",
+      "name": "马桶",
+      "font_class": "matong",
+      "unicode": "e6f2",
+      "unicode_decimal": 59122
+    },
+    {
+      "icon_id": "23984366",
+      "name": "摸鱼",
+      "font_class": "touch-fish",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "33439908",
+      "name": "[庆祝]",
+      "font_class": "a-qingzhu",
+      "unicode": "e6af",
+      "unicode_decimal": 59055
+    },
+    {
+      "icon_id": "35717265",
+      "name": "喝水",
+      "font_class": "heshui",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "35882952",
+      "name": "摸鱼猪",
+      "font_class": "keaisuopingtubiao_moyuzhu",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "36778991",
+      "name": "庆祝",
+      "font_class": "qingzhu1",
+      "unicode": "e7a1",
+      "unicode_decimal": 59297
+    }
+  ]
+}
