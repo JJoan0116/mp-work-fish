@@ -2,6 +2,7 @@ import { Component } from 'react'
 import { View, Text, Image } from '@tarojs/components'
 import { AtModal, AtModalContent, AtModalAction, AtInputNumber, AtModalHeader, AtButton, AtSwipeAction} from 'taro-ui'
 import Taro from '@tarojs/taro'
+import dayjs from 'dayjs'
 import './index.scss'
 
 export default class Today extends Component {
@@ -21,18 +22,19 @@ export default class Today extends Component {
       // 当前时间和下班时间
       currentTime: '0',
       timeToOffWork: '0',
+      // 发薪日设置
+      payDay: 10,
       // 四个功能按钮的数据
       activities: [
-            
         { type: 'FISH', label: '带薪摸鱼', icon: <View className='iconfont icon-touch-fish'></View>, count: 0 },
         { type: 'TOILET', label: '带薪蹲坑', icon: <View className='iconfont icon-matong'></View>, count: 0 },
         { type: 'DRINK', label: '带薪喝水', icon: <View className='iconfont icon-heshui'></View>, count: 0 },
       ],
       // 四个状态指标
       statusItems: [
-        { label: '距离发钱', icon: <View className='iconfont icon-qian'></View>, value: '0天' },
-        { label: '距离周末', icon: <View className='iconfont icon-icon'></View>, value: '0天' },
-        { label: '距离放假', icon: <View className='iconfont icon-qingzhu1'></View>, value: '0天' },
+        { label: '距离发钱', icon: <View className='iconfont icon-qian'></View>, value: '0' },
+        { label: '距离周末', icon: <View className='iconfont icon-icon'></View>, value: '0' },
+        { label: '距离放假', icon: <View className='iconfont icon-qingzhu1'></View>, value: '0' },
       ],
       // 摸鱼记录
       fishRecords: [
@@ -44,6 +46,7 @@ export default class Today extends Component {
 
   componentDidMount() {
     // 实际应用中应该获取真实数据
+    this.calculateDaysToPayday()
     this.updateCurrentTime()
     // 如果已经下班，不启动定时器
     const now = new Date()
@@ -62,10 +65,34 @@ export default class Today extends Component {
     }
   }
 
+  calculateDaysToPayday() {
+    const { payDay } = this.state
+    const today = dayjs()
+    const thisMonthPayday = dayjs().date(payDay)
+    const nextMonthPayday = dayjs().add(1, 'month').date(payDay)
+    let daysToPayday
+    
+    if (today.date() < payDay) {
+      // 当前日期小于发薪日，计算到本月发薪日的天数
+      daysToPayday = thisMonthPayday.diff(today, 'day')
+    } else {
+      // 当前日期大于等于发薪日，计算到下月发薪日的天数
+      daysToPayday = nextMonthPayday.diff(today, 'day')
+    }
+    
+    console.log(`距离发薪还有daysToPayday ${daysToPayday} 天`)
+    // 更新状态
+    const statusItems = [...this.state.statusItems]
+    statusItems[0] = { ...statusItems[0], value: daysToPayday.toString() }
+    this.setState({ statusItems })
+  }
+
   updateCurrentTime() {
     const now = new Date()
     const offWorkTime = new Date()
+    const startWorkTime = new Date()
     offWorkTime.setHours(18, 0, 0)
+    startWorkTime.setHours(9, 0, 0)
     
     // 如果已经下班，固定时间为00:00并清除定时器
     if (now >= offWorkTime) {
@@ -77,11 +104,23 @@ export default class Today extends Component {
         currentTime: '00:00',
         timeToOffWork: '已下班'
       })
+      document.documentElement.style.setProperty('--progress', '1')
       return
     }
     
     const hours = now.getHours().toString().padStart(2, '0')
     const minutes = now.getMinutes().toString().padStart(2, '0')
+    
+    // 计算工作进度，如果已经下班则直接设置为100%
+    if (now >= offWorkTime) {
+      document.documentElement.style.setProperty('--progress', '1')
+    } else {
+      const totalWorkMs = offWorkTime - startWorkTime
+      const workedMs = now - startWorkTime
+      const progress = Math.max(0, Math.min(1, workedMs / totalWorkMs))
+      document.documentElement.style.setProperty('--progress', progress)
+    }
+    
     this.setState({
       currentTime: `${hours}:${minutes}`
     })
@@ -92,7 +131,7 @@ export default class Today extends Component {
     const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
     
     this.setState({
-      timeToOffWork: `距离下班还有${diffHours}.${Math.floor(diffMinutes / 6)}h`
+      timeToOffWork: now >= offWorkTime ? '已下班' : `距离下班还有${diffHours}.${Math.floor(diffMinutes / 6)}h`
     })
   }
 
@@ -320,7 +359,7 @@ export default class Today extends Component {
           {statusItems.map((item, index) => (
             <View key={index} className='status-item'>
               <View className='status-label'>{item.label} {item.icon}</View>
-              <Text className='status-value'>{item.value}</Text>
+              <Text className='status-value'>{item.value}天</Text>
             </View>
           ))}
         </View>

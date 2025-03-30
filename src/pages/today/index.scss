@@ -90,10 +90,23 @@
         right: -15px;
         bottom: -15px;
         border-radius: 50%;
-        border: 15px solid transparent;
-        border-top: 15px solid #3498db;
-        border-right: 15px solid #3498db;
-        transform: rotate(45deg);
+        border: 15px solid rgba(52, 152, 219, 0.2);
+        clip-path: circle(50% at 50% 50%);
+      }
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: -15px;
+        left: -15px;
+        right: -15px;
+        bottom: -15px;
+        border-radius: 50%;
+        border: 15px solid rgba(52, 152, 219, 0.8);
+        clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 50% 0%);
+        transform-origin: center;
+        transform: rotate(calc(var(--progress) * 360deg));
+        transition: transform 0.3s ease;
       }
       
       .current-time {
