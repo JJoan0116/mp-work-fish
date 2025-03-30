@@ -58,8 +58,7 @@ export default class Today extends Component {
 
   componentDidMount() {
     // 实际应用中应该获取真实数据
-    this.calculateDaysToPayday()
-    this.calculateHolidays()
+    this.calculateDaysToTarget()
     this.updateCurrentTime()
     // 如果已经下班，不启动定时器
     const now = new Date()
@@ -78,45 +77,31 @@ export default class Today extends Component {
     }
   }
 
-  calculateHolidays() {
+  calculateDaysToTarget() {
     const today = dayjs().startOf('day')
-    const { holidays } = this.state
+    const { holidays, payDay } = this.state
+    const statusItems = [...this.state.statusItems]
+
+    // 计算距离发薪日的天数
+    const thisMonthPayday = dayjs().date(payDay)
+    const nextMonthPayday = dayjs().add(1, 'month').date(payDay)
+    const daysToPayday = today.date() < payDay
+      ? thisMonthPayday.diff(today, 'day')
+      : nextMonthPayday.diff(today, 'day')
+    statusItems[0] = { ...statusItems[0], value: daysToPayday.toString() }
     
-    // 找到下一个最近的节假日
+    // 计算距离最近节假日的天数
     const nextHoliday = holidays
       .map(holiday => ({ ...holiday, date: dayjs(holiday.date).startOf('day') }))
       .filter(holiday => dayjs(holiday.date).isSameOrAfter(today))
       .sort((a, b) => dayjs(a.date).diff(today, 'day') - dayjs(b.date).diff(today, 'day'))[0]
     
-      // holidays.find(holiday => dayjs(holiday.date) > dayjs())
-      console.log(`nextHoliday 下一个最近的节假日是 ${nextHoliday?.name}，距离今天还有 ${nextHoliday?.date.diff(today, 'day')} 天`)
     if (nextHoliday) {
       const daysToHoliday = nextHoliday.date.diff(today, 'day')
-      const statusItems = [...this.state.statusItems]
       statusItems[2] = { ...statusItems[2], value: daysToHoliday.toString() }
-      this.setState({ statusItems })
+      console.log(`下一个最近的节假日是 ${nextHoliday.name}，距离今天还有 ${daysToHoliday} 天`)
     }
-  }
 
-  calculateDaysToPayday() {
-    const { payDay } = this.state
-    const today = dayjs()
-    const thisMonthPayday = dayjs().date(payDay)
-    const nextMonthPayday = dayjs().add(1, 'month').date(payDay)
-    let daysToPayday
-    
-    if (today.date() < payDay) {
-      // 当前日期小于发薪日，计算到本月发薪日的天数
-      daysToPayday = thisMonthPayday.diff(today, 'day')
-    } else {
-      // 当前日期大于等于发薪日，计算到下月发薪日的天数
-      daysToPayday = nextMonthPayday.diff(today, 'day')
-    }
-    
-    console.log(`距离发薪还有daysToPayday ${daysToPayday} 天`)
-    // 更新状态
-    const statusItems = [...this.state.statusItems]
-    statusItems[0] = { ...statusItems[0], value: daysToPayday.toString() }
     this.setState({ statusItems })
   }
 
