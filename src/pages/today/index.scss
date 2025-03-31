@@ -1,348 +1,263 @@
-.today-page {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+/* 今日摸鱼页面样式 */
+.today-container {
   height: 100vh;
-  background-color: #f8f9fa;
   padding: 20px;
   box-sizing: border-box;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: hidden;
+}
 
-  .iconfont {
-    font-size: 40px;
-    color: #8395a7;
+/* 倒计时卡片样式 */
+.countdown-card {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+  border-radius: 40px;
+  padding: 30px;
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  /* 动效元素样式 */
+  .confetti {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: #FFD700;
+    opacity: 0.9;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    animation: fall 4s ease-in-out infinite;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      background: inherit;
+      border-radius: inherit;
+      transform: translate(-50%, -50%) scale(0.5);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    &:nth-child(even) {
+      width: 24px;
+      height: 24px;
+      animation-duration: 3.5s;
+      animation-delay: 0.2s;
+    }
+
+    &:nth-child(3n) {
+      width: 36px;
+      height: 36px;
+      animation-duration: 4.5s;
+      animation-delay: 0.4s;
+    }
   }
 
-  /* 顶部卡片区域 */
-  .card-section {
+  @keyframes fall {
+    0% {
+      transform: translateY(-100px) rotate(0deg) scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(400px) rotate(180deg) scale(1.2);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(800px) rotate(360deg) scale(0.8);
+      opacity: 0;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(0.5);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .countdown-title {
+    font-size: 32px;
+    display: block;
+  }
+
+  .time-display {
+    font-size: 96px;
+    font-weight: bold;
+    display: block;
+  }
+
+  .progress-bar {
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+
+    .progress {
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 10px;
+    }
+  }
+
+  .progress-text {
+    font-size: 28px;
+    display: block;
+  }
+}
+
+/* 薪资信息样式 */
+.salary-info {
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  border-radius: 30px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+
+  .salary-item {
+    text-align: center;
+    flex: 1;
+
+    .salary-label {
+      font-size: 28px;
+      color: #666;
+      display: block;
+    }
+
+    .salary-value {
+      font-size: 48px;
+      font-weight: bold;
+      color: #1E88E5;
+      display: block;
+
+      &.total {
+        color: #FF9800;
+      }
+    }
+  }
+}
+
+/* 摸鱼记录区域样式 */
+.fish-records {
+  flex: 1;
+  overflow: hidden;
+  background: white;
+  border-radius: 36px;
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  .records-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    align-items: center;
+    border-bottom: 2px solid #f0f0f0;
 
-    .card {
-      width: 45%;
-      background-color: #ffffff;
+    .records-title {
+      color: #1E88E5;
+      font-size: 34px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+
+      .icon {
+        margin-right: 16px;
+        padding: 16px;
+        border-radius: 50%;
+        font-size: 28px;
+      }
+    }
+
+    .add-record {
+      display: inline-flex;
+      align-items: center;
+      color: #1E88E5;
+      font-size: 28px;
+
+      .icon {
+        margin-right: 8px;
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  .record-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .record-item {
       border-radius: 20px;
-      padding: 15px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 20px 0;
 
-      .card-header {
+      .record-header {
+        display: flex;
+        justify-content: space-between;
+
+        .record-time {
+          font-size: 32px;
+          color: #333;
+        }
+
+        .record-duration {
+          font-size: 28px;
+          color: #1E88E5;
+        }
+      }
+
+      .record-content-wrapper {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
+        margin: 5px 0;
 
-        .card-title {
-          font-size: 32px;
-          color: #8395a7;
+        .record-content {
+          color: #666;
+          line-height: 1.4;
+          flex: 1;
+          margin-right: 15px;
         }
 
-        // .favorite-icon {
-          // font-size: 72px;
-          // color: #8395a7;
-        // }
-      }
+        .record-actions {
+          display: flex;
+          gap: 15px;
+          justify-content: flex-end;
 
-      .card-value {
-        font-size: 48px;
-        font-weight: bold;
-        color: #3498db;
-      }
-    }
+          .edit-btn,
+          .delete-btn {
+            font-size: 28px;
+            color: #1E88E5;
+            cursor: pointer;
 
-    .fish-amount-card {
-      .card-value {
-        color: #3498db;
-      }
-    }
+            &:hover {
+              opacity: 0.8;
+            }
+          }
 
-    .salary-card {
-      .card-value {
-        color: #3498db;
-      }
-    }
-  }
-
-  /* 时钟区域 */
-  .clock-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-
-    .clock-container {
-      width: 340px;
-      height: 340px;
-      border-radius: 50%;
-      background-color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-
-      View {
-        width: 280px;
-        height: 280px;
-        background-color: #ffffff;
-        border-radius: 50%;
-        position: absolute;
-        z-index: 9;
-      }
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: 50%;
-        background: rgba(52, 152, 219, 0.2);
-        z-index: 1;
-      }
-
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: 50%;
-        background: rgba(52, 152, 219, 0.8);
-        clip-path: polygon(50% 50%, 50% 0, calc(50% + 50% * var(--progress)) 0);
-        transform-origin: center;
-        transform: rotate(0deg);
-        transition: clip-path 0.3s ease;
-        z-index: 2;
-      }
-
-      .current-time {
-        font-size: 80px;
-        font-weight: bold;
-        color: #3498db;
-        margin-bottom: 10px;
-        z-index: 10;
-      }
-
-      .time-to-off {
-        font-size: 28px;
-        color: #8395a7;
-        z-index: 10;
-      }
-    }
-  }
-
-  /* 功能按钮区域 */
-  .activity-section {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-
-    .activity-item {
-      width: 30%;
-      background-color: #ffffff;
-      border-radius: 15px;
-      padding: 15px 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-
-      .activity-icon {
-        // font-size: 24px;
-        // margin-bottom: 5px;
-        font-size: 128x;
-        color: #8395a7;
-        margin-bottom: 5px;
-        text-align: center;
-      }
-
-      .activity-count {
-        font-size: 32px;
-        font-weight: bold;
-        color: #3498db;
-      }
-    }
-  }
-
-  /* 状态指标区域 */
-  .status-section {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-
-    .status-item {
-      width: 30%;
-      background-color: #ffffff;
-      border-radius: 15px;
-      padding: 15px 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-
-      .status-label {
-        font-size: 28px;
-        color: #8395a7;
-        margin-bottom: 5px;
-        text-align: center;
-      }
-
-      .status-value {
-        font-size: 32px;
-        font-weight: bold;
-        color: #3498db;
-      }
-    }
-  }
-
-  /* 摸鱼记录区域 */
-  .record-section {
-    background-color: #ffffff;
-    border-radius: 20px;
-    padding: 15px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
-
-    .record-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #f0f0f0;
-
-      .record-title {
-        font-size: 32px;
-        font-weight: bold;
-        color: #8395a7;
-      }
-
-      .record-total {
-        font-size: 28px;
-        color: #3498db;
-      }
-    }
-
-    .record-list {
-      overflow-y: auto;
-      height: 100%;
-
-      .record-item {
-        width: 100%!important;
-        margin-bottom: 10px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        position: relative;
-        z-index: 1;
-
-  .record-content-wrapper {
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    pointer-events: none;
-    gap: 10px;
-  }
-
-  .record-time {
-    font-size: 24px;
-    color: #666;
-  }
-
-  .record-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .record-icon {
-    font-size: 32px;
-  }
-
-  .record-type {
-    font-size: 28px;
-    color: #333;
-  }
-
-  .record-duration {
-    font-size: 24px;
-    color: #666;
-  }
-}
-    }
-  }
-}
-
-.fish-modal {
-  .at-modal__container {
-    width: 80%;
-    border-radius: 16px;
-    overflow: hidden;
-  }
-
-  .at-modal__header {
-    padding: 20px;
-    text-align: center;
-    font-size: 36px;
-    font-weight: bold;
-    border-bottom: 1px solid #eee;
-  }
-
-  .at-modal__content {
-    padding: 24px;
-    min-height: auto;
-    height: auto;
-
-    .modal-input-container {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin: 16px 0;
-
-      .at-input {
-        flex: 1;
-        margin-bottom: 0;
-
-        &__container {
-          border: 1px solid #ddd;
-          border-radius: 12px;
-          padding: 12px 16px;
-        }
-
-        &__title {
-          font-size: 36px;
-          color: #333;
-          margin-right: 12px;
+          .delete-btn {
+            color: #f44336;
+          }
         }
       }
-
-      .input-unit {
-        margin-left: 12px;
-        font-size: 36px;
-        color: #666;
       }
     }
   }
 
-  .at-modal__action {
-    border-top: 1px solid #eee;
-    padding: 16px 24px;
-
-    .modal-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      width: 100%;
-    }
-  }
-}

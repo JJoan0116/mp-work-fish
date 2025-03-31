@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摸鱼薪资计算器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .prototype-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .screen {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 40px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .countdown-card {
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-card.hot {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+        }
+
+        .time-display {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 65%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+        }
+
+        .salary-info {
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .salary-item {
+            text-align: center;
+        }
+
+        .salary-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1E88E5;
+        }
+
+        .salary-item:last-child .salary-value {
+            color: #FF9800;
+        }
+
+        .note-area {
+            background: #f8f8f8;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .motivation-card {
+            background: #FFF8E1;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .motivation-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .motivation-icon {
+            width: 40px;
+            height: 40px;
+            background: #FFE082;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #FF9800;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            height: 60px;
+            background: white;
+            border-radius: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item {
+            color: #666;
+            text-align: center;
+        }
+
+        .nav-item.active {
+            color: #1E88E5;
+        }
+
+        .button {
+            background: #1E88E5;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .stats-card {
+            background: #E3F2FD;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .stats-chart {
+            height: 200px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: flex-end;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: #1E88E5;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        /* 动效相关样式 */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFC107;
+            opacity: 0.8;
+            border-radius: 50%;
+            animation: fall 3s linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-50px) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(400px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="prototype-container">
+        <!-- 首页 -->
+        <div class="screen">
+            <div class="header">
+                <div class="title">摸鱼薪资计算器</div>
+                <i class="fas fa-cog" style="color: #666;"></i>
+            </div>
+            <div class="countdown-card hot">
+                <!-- 动效元素 -->
+                <div class="confetti" style="left: 10%; animation-delay: 0.5s;"></div>
+                <div class="confetti" style="left: 30%; animation-delay: 1.2s;"></div>
+                <div class="confetti" style="left: 70%; animation-delay: 0.7s;"></div>
+                <div class="confetti" style="left: 85%; animation-delay: 1.5s;"></div>
+
+                <p>距离下班还有</p>
+                <div class="time-display">01:25:36</div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 82%;"></div>
+                </div>
+                <p>已完成今日 82%</p>
+            </div>
+
+            <div class="salary-info">
+                <div class="salary-item">
+                    <p style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        今日摸鱼薪资
+                        <i class="fas fa-eye" id="toggleFishSalary"
+                            style="cursor: pointer; font-size: 14px; color: #777;"
+                            onclick="toggleSalary('fishSalary', event)"></i>
+                    </p>
+                    <div class="salary-value" id="fishSalary">¥128</div>
+                </div>
+                <div class="salary-item">
+                    <p style="display: flex; align-items: center; justify-content: center; gap: 5px;">
+                        今日总薪资
+                        <i class="fas fa-eye" id="toggleTotalSalary"
+                            style="cursor: pointer; font-size: 14px; color: #777;"
+                            onclick="toggleSalary('totalSalary', event)"></i>
+                    </p>
+                    <div class="salary-value" id="totalSalary">¥450</div>
+                </div>
+            </div>
+
+            <!-- 优化摸鱼记录区域样式 - 调整高度和滚动 -->
+            <div class="note-area"
+                style="cursor: pointer; position: relative; margin-bottom: 80px; background: white; border-radius: 18px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.3s ease; max-height: 350px; overflow-y: auto;"
+                onclick="document.getElementById('fishModal').style.display='flex'">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #f0f0f0; padding-bottom: 12px;">
+                    <h3 style="color: #1E88E5; font-size: 17px; font-weight: 600; display: flex; align-items: center;">
+                        <i class="fas fa-fish"
+                            style="margin-right: 8px; background: #E3F2FD; padding: 8px; border-radius: 50%; font-size: 14px;"></i>今日摸鱼记录
+                    </h3>
+                    <div
+                        style="background: #E3F2FD; padding: 6px 12px; border-radius: 20px; color: #1E88E5; font-size: 14px; font-weight: 500; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(30,136,229,0.15);">
+                        <i class="fas fa-plus" style="margin-right: 6px; font-size: 12px;"></i>添加记录
+                    </div>
+                </div>
+
+                <!-- 摸鱼记录列表 -->
+                <div class="fish-record-list" style="max-height: 280px; overflow-y: auto; padding-right: 5px;">
+                    <div class="fish-record-item"
+                        style="padding: 15px; background: #f9f9f9; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 3px solid #1E88E5; transition: transform 0.2s ease;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span
+                                style="color: #555; font-size: 14px; font-weight: 500; display: flex; align-items: center;">
+                                <i class="fas fa-clock"
+                                    style="color: #1E88E5; margin-right: 6px; font-size: 12px;"></i>上午 10:30
+                            </span>
+                            <span
+                                style="color: #1E88E5; font-weight: bold; background: #E3F2FD; padding: 3px 10px; border-radius: 12px; font-size: 13px;">60
+                                分钟</span>
+                        </div>
+                        <p style="color: #666; margin: 5px 0 10px 0; line-height: 1.4;">开会时间摸鱼，看了会儿微博...</p>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 5px;">
+                            <span
+                                style="color: #1E88E5; margin-right: 15px; font-size: 12px; cursor: pointer; display: flex; align-items: center;">
+                                <i class="fas fa-edit" style="margin-right: 4px;"></i> 编辑
+                            </span>
+                            <span
+                                style="color: #FF5252; font-size: 12px; cursor: pointer; display: flex; align-items: center;">
+                                <i class="fas fa-trash" style="margin-right: 4px;"></i> 删除
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="fish-record-item"
+                        style="padding: 15px; background: #f9f9f9; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 3px solid #1E88E5; transition: transform 0.2s ease;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span
+                                style="color: #555; font-size: 14px; font-weight: 500; display: flex; align-items: center;">
+                                <i class="fas fa-clock"
+                                    style="color: #1E88E5; margin-right: 6px; font-size: 12px;"></i>下午 14:20
+                            </span>
+                            <span
+                                style="color: #1E88E5; font-weight: bold; background: #E3F2FD; padding: 3px 10px; border-radius: 12px; font-size: 13px;">45
+                                分钟</span>
+                        </div>
+                        <p style="color: #666; margin: 5px 0 10px 0; line-height: 1.4;">午休后继续摸鱼，刷了会儿视频...</p>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 5px;">
+                            <span
+                                style="color: #1E88E5; margin-right: 15px; font-size: 12px; cursor: pointer; display: flex; align-items: center;">
+                                <i class="fas fa-edit" style="margin-right: 4px;"></i> 编辑
+                            </span>
+                            <span
+                                style="color: #FF5252; font-size: 12px; cursor: pointer; display: flex; align-items: center;">
+                                <i class="fas fa-trash" style="margin-right: 4px;"></i> 删除
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="fish-record-item"
+                        style="padding: 15px; background: #f9f9f9; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 3px solid #1E88E5; transition: transform 0.2s ease;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span
+                                style="color: #555; font-size: 14px; font-weight: 500; display: flex; align-items: center;">
+                                <i class="fas fa-clock"
+                                    style="color: #1E88E5; margin-right: 6px; font-size: 12px;"></i>下午 16:45
+                            </span>
+                            <span
+                                style="color: #1E88E5; font-weight: bold; background: #E3F2FD; padding: 3px 10px; border-radius: 12px; font-size: 13px;">45
+                                分钟</span>
+                        </div>
+                        <p style="color: #666; margin: 5px 0 10px 0; line-height: 1.4;">下班前摸鱼，看了会儿小说...</p>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 5px;">
+                            <span
+                                style="color: #1E88E5; margin-right: 15px; font-size: 12px; cursor: pointer; display: flex; align-items: center;">
+                                <i class="fas fa-edit" style="margin-right: 4px;"></i> 编辑
+                            </span>
+                            <span
+                                style="color: #FF5252; font-size: 12px; cursor: pointer; display: flex; align-items: center;">
+                                <i class="fas fa-trash" style="margin-right: 4px;"></i> 删除
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style="position: absolute; bottom: 15px; right: 20px; color: #1E88E5; font-size: 13px; display: flex; align-items: center; background: #E3F2FD; padding: 5px 10px; border-radius: 15px;">
+                    <i class="fas fa-edit" style="margin-right: 5px;"></i> 点击编辑
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <p>首页</p>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <p>统计</p>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <p>历史</p>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <p>我的</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设置页面 -->
+        <div class="screen">
+            <div class="header">
+                <i class="fas fa-arrow-left" style="color: #666;"></i>
+                <div class="title">设置</div>
+            </div>
+            <div style="padding: 20px 0;">
+                <div class="input-group">
+                    <label>日薪 (元)</label>
+                    <input type="number" value="500">
+                </div>
+                <div class="input-group">
+                    <label>上班时间</label>
+                    <input type="time" value="09:00">
+                </div>
+                <div class="input-group">
+                    <label>下班时间</label>
+                    <input type="time" value="18:00">
+                </div>
+
+                <!-- 新增工作日筛选选项 - 优化UI -->
+                <div class="input-group">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <label style="font-weight: 500; color: #333;">工作日选择</label>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span id="workday-select-all" onclick="toggleAllWorkdays(true)"
+                                style="font-size: 13px; color: #1E88E5; cursor: pointer; padding: 3px 8px; border-radius: 12px; background: #E3F2FD;">全选</span>
+                            <span id="workday-clear-all" onclick="toggleAllWorkdays(false)"
+                                style="font-size: 13px; color: #757575; cursor: pointer; padding: 3px 8px; border-radius: 12px; background: #f0f0f0;">清除</span>
+                        </div>
+                    </div>
+
+                    <div class="workday-container"
+                        style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                        <div class="workday-item"
+                            style="display: flex; align-items: center; justify-content: center; background: #E3F2FD; padding: 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; border: 1px solid #BBDEFB; color: #1E88E5;"
+                            onclick="toggleWorkday(this, 1)" data-selected="true">
+                            <span style="font-weight: 500;">周一</span>
+                        </div>
+                        <div class="workday-item"
+                            style="display: flex; align-items: center; justify-content: center; background: #E3F2FD; padding: 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; border: 1px solid #BBDEFB; color: #1E88E5;"
+                            onclick="toggleWorkday(this, 2)" data-selected="true">
+                            <span style="font-weight: 500;">周二</span>
+                        </div>
+                        <div class="workday-item"
+                            style="display: flex; align-items: center; justify-content: center; background: #E3F2FD; padding: 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; border: 1px solid #BBDEFB; color: #1E88E5;"
+                            onclick="toggleWorkday(this, 3)" data-selected="true">
+                            <span style="font-weight: 500;">周三</span>
+                        </div>
+                        <div class="workday-item"
+                            style="display: flex; align-items: center; justify-content: center; background: #E3F2FD; padding: 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; border: 1px solid #BBDEFB; color: #1E88E5;"
+                            onclick="toggleWorkday(this, 4)" data-selected="true">
+                            <span style="font-weight: 500;">周四</span>
+                        </div>
+                        <div class="workday-item"
+                            style="display: flex; align-items: center; justify-content: center; background: #E3F2FD; padding: 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; border: 1px solid #BBDEFB; color: #1E88E5;"
+                            onclick="toggleWorkday(this, 5)" data-selected="true">
+                            <span style="font-weight: 500;">周五</span>
+                        </div>
+                        <div class="workday-item"
+                            style="display: flex; align-items: center; justify-content: center; background: #f5f5f5; padding: 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; border: 1px solid #e0e0e0; color: #757575;"
+                            onclick="toggleWorkday(this, 6)" data-selected="false">
+                            <span style="font-weight: 500;">周六</span>
+                        </div>
+                        <div class="workday-item"
+                            style="display: flex; align-items: center; justify-content: center; background: #f5f5f5; padding: 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; border: 1px solid #e0e0e0; color: #757575;"
+                            onclick="toggleWorkday(this, 0)" data-selected="false">
+                            <span style="font-weight: 500;">周日</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="button">
+                    <i class="fas fa-save"></i>
+                    保存设置
+                </button>
+            </div>
+        </div>
+
+        <!-- 统计分析页面 -->
+        <div class="screen">
+            <div class="header">
+                <div class="title">摸鱼统计</div>
+                <i class="fas fa-calendar-alt" style="color: #666;"></i>
+            </div>
+            <div class="stats-card">
+                <div class="stats-header">
+                    <h3>本周摸鱼薪资</h3>
+                    <p>总计: ¥568</p>
+                </div>
+                <div class="stats-chart">
+                    <div class="chart-bar" style="height: 40%;"></div>
+                    <div class="chart-bar" style="height: 60%;"></div>
+                    <div class="chart-bar" style="height: 30%;"></div>
+                    <div class="chart-bar" style="height: 80%;"></div>
+                    <div class="chart-bar" style="height: 50%;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px; color: #666;">
+                    <span>周一</span>
+                    <span>周二</span>
+                    <span>周三</span>
+                    <span>周四</span>
+                    <span>周五</span>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-header">
+                    <h3>摸鱼效率分析</h3>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 15px 0;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #1E88E5;">28%</div>
+                        <p>平均摸鱼率</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #1E88E5;">2.5h</div>
+                        <p>日均摸鱼时长</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #1E88E5;">¥2,340</div>
+                        <p>本月摸鱼薪资</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-nav">
+                <div class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <p>首页</p>
+                </div>
+                <div class="nav-item active">
+                    <i class="fas fa-chart-bar"></i>
+                    <p>统计</p>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <p>历史</p>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <p>我的</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史记录页面 -->
+        <div class="screen">
+            <div class="header">
+                <div class="title">历史记录</div>
+                <i class="fas fa-search" style="color: #666;"></i>
+            </div>
+            <div style="overflow-y: auto; height: calc(100% - 130px);">
+                <div class="history-item">
+                    <div class="history-header">
+                        <span>2024-01-20</span>
+                        <span style="color: #1E88E5;">摸鱼时长: 3.5h</span>
+                    </div>
+                    <p style="color: #666;">上午开会摸鱼2小时，下午刷了会儿微博...</p>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span>摸鱼率: 43%</span>
+                        <span style="color: #FF9800; font-weight: bold;">¥175</span>
+                    </div>
+                </div>
+                <div class="history-item">
+                    <div class="history-header">
+                        <span>2024-01-19</span>
+                        <span style="color: #1E88E5;">摸鱼时长: 2h</span>
+                    </div>
+                    <p style="color: #666;">今天老板不在，摸了一下午的鱼...</p>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span>摸鱼率: 25%</span>
+                        <span style="color: #FF9800; font-weight: bold;">¥125</span>
+                    </div>
+                </div>
+                <div class="history-item">
+                    <div class="history-header">
+                        <span>2024-01-18</span>
+                        <span style="color: #1E88E5;">摸鱼时长: 1.5h</span>
+                    </div>
+                    <p style="color: #666;">今天工作比较忙，只摸了一会儿鱼...</p>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span>摸鱼率: 18%</span>
+                        <span style="color: #FF98E5; font-weight: bold;">¥90</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-nav">
+                <div class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <p>首页</p>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <p>统计</p>
+                </div>
+                <div class="nav-item active">
+                    <i class="fas fa-history"></i>
+                    <p>历史</p>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <p>我的</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改摸鱼记录弹窗 -->
+    <!-- <div class="modal" id="fishModal">
+        <div class="modal-content"> -->
+    <!-- 编辑记录表单 (默认隐藏) -->
+    <!-- <div id="editForm"
+                style="background: #E3F2FD; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: none;">
+                <h4 style="margin-bottom: 10px; color: #1E88E5;">编辑记录</h4>
+                <input type="hidden" id="editIndex" value="">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 5px; color: #555; font-size: 14px;">时间</label>
+                        <input type="time" id="editTime"
+                            style="width: 100%; padding: 8px; border: 1px solid #E0E0E0; border-radius: 8px;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 5px; color: #555; font-size: 14px;">时长 (分钟)</label>
+                        <input type="number" id="editDuration"
+                            style="width: 100%; padding: 8px; border: 1px solid #E0E0E0; border-radius: 8px;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="display: block; margin-bottom: 5px; color: #555; font-size: 14px;">摸鱼内容</label>
+                    <textarea id="editContent"
+                        style="width: 100%; height: 60px; padding: 8px; border: 1px solid #E0E0E0; border-radius: 8px; resize: none;"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button
+                        style="flex: 1; background: #1E88E5; color: white; border: none; border-radius: 8px; padding: 8px 15px; font-size: 14px; cursor: pointer;"
+                        onclick="saveEdit()">
+                        <i class="fas fa-save"></i> 保存修改
+                    </button>
+                    <button
+                        style="flex: 1; background: #9E9E9E; color: white; border: none; border-radius: 8px; padding: 8px 15px; font-size: 14px; cursor: pointer;"
+                        onclick="cancelEdit()">
+                        <i class="fas fa-times"></i> 取消
+                    </button>
+                </div>
+            </div> -->
+
+    <!-- 添加新记录表单 -->
+    <!-- <div id="addForm" style="background: #E3F2FD; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <h4 style="margin-bottom: 10px; color: #1E88E5;">添加新记录</h4>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 5px; color: #555; font-size: 14px;">时间</label>
+                        <input type="time" value="10:30"
+                            style="width: 100%; padding: 8px; border: 1px solid #E0E0E0; border-radius: 8px;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 5px; color: #555; font-size: 14px;">时长 (分钟)</label>
+                        <input type="number" value="30"
+                            style="width: 100%; padding: 8px; border: 1px solid #E0E0E0; border-radius: 8px;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="display: block; margin-bottom: 5px; color: #555; font-size: 14px;">摸鱼内容</label>
+                    <textarea
+                        style="width: 100%; height: 60px; padding: 8px; border: 1px solid #E0E0E0; border-radius: 8px; resize: none;"
+                        placeholder="记录一下摸鱼内容..."></textarea>
+                </div>
+                <button
+                    style="background: #1E88E5; color: white; border: none; border-radius: 8px; padding: 8px 15px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                    <i class="fas fa-plus"></i> 添加记录
+                </button>
+            </div>
+
+            <button class="button" onclick="document.getElementById('fishModal').style.display='none'">
+                <i class="fas fa-save"></i> 保存所有记录
+            </button> -->
+    <!-- </div>
+    </div> -->
+
+    <script>
+        // 简单的弹窗关闭逻辑
+        window.onclick = function (event) {
+            const modal = document.getElementById('fishModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // 切换薪资显示/隐藏
+        function toggleSalary(id, event) {
+            event.stopPropagation(); // 阻止事件冒泡
+            const salaryElement = document.getElementById(id);
+            const eyeIcon = event.target;
+
+            if (salaryElement.getAttribute('data-hidden') === 'true') {
+                // 显示薪资
+                salaryElement.textContent = salaryElement.getAttribute('data-value');
+                salaryElement.setAttribute('data-hidden', 'false');
+                eyeIcon.className = 'fas fa-eye';
+            } else {
+                // 隐藏薪资
+                salaryElement.setAttribute('data-value', salaryElement.textContent);
+                salaryElement.textContent = '******';
+                salaryElement.setAttribute('data-hidden', 'true');
+                eyeIcon.className = 'fas fa-eye-slash';
+            }
+        }
+
+        // 切换工作日选择
+        function toggleWorkday(element, day) {
+            // 获取当前选中状态
+            const isSelected = element.getAttribute('data-selected') === 'true';
+
+            // 切换状态
+            if (isSelected) {
+                // 取消选中
+                element.setAttribute('data-selected', 'false');
+                element.style.background = '#f5f5f5';
+                element.style.color = '#757575';
+                element.style.borderColor = '#e0e0e0';
+            } else {
+                // 选中
+                element.setAttribute('data-selected', 'true');
+                element.style.background = '#E3F2FD';
+                element.style.color = '#1E88E5';
+                element.style.borderColor = '#BBDEFB';
+            }
+
+            // 在实际应用中，这里可以保存用户的工作日选择
+            console.log(`工作日 ${day} (${getDayName(day)}) 设置为: ${!isSelected ? '工作日' : '休息日'}`);
+
+            // 更新全选按钮状态
+            updateSelectAllButtonState();
+        }
+
+        // 全选或取消全选
+        function toggleAllWorkdays(selectAll) {
+            const workdayItems = document.querySelectorAll('.workday-item');
+
+            workdayItems.forEach((item, index) => {
+                const day = item.getAttribute('onclick').match(/toggleWorkday\(this, (\d+)\)/)[1];
+
+                if (selectAll) {
+                    // 全选
+                    item.setAttribute('data-selected', 'true');
+                    item.style.background = '#E3F2FD';
+                    item.style.color = '#1E88E5';
+                    item.style.borderColor = '#BBDEFB';
+                } else {
+                    // 取消全选
+                    item.setAttribute('data-selected', 'false');
+                    item.style.background = '#f5f5f5';
+                    item.style.color = '#757575';
+                    item.style.borderColor = '#e0e0e0';
+                }
+
+                console.log(`工作日 ${day} (${getDayName(day)}) 设置为: ${selectAll ? '工作日' : '休息日'}`);
+            });
+
+            // 更新全选按钮状态
+            updateSelectAllButtonState();
+        }
+
+        // 更新全选按钮状态
+        function updateSelectAllButtonState() {
+            const workdayItems = document.querySelectorAll('.workday-item');
+            const selectAllBtn = document.getElementById('workday-select-all');
+            const clearAllBtn = document.getElementById('workday-clear-all');
+
+            // 检查是否所有项都已选中
+            const allSelected = Array.from(workdayItems).every(item => item.getAttribute('data-selected') === 'true');
+            // 检查是否所有项都未选中
+            const noneSelected = Array.from(workdayItems).every(item => item.getAttribute('data-selected') === 'false');
+
+            // 更新按钮状态
+            if (allSelected) {
+                selectAllBtn.style.opacity = '0.5';
+                selectAllBtn.style.pointerEvents = 'none';
+                clearAllBtn.style.opacity = '1';
+                clearAllBtn.style.pointerEvents = 'auto';
+            } else if (noneSelected) {
+                selectAllBtn.style.opacity = '1';
+                selectAllBtn.style.pointerEvents = 'auto';
+                clearAllBtn.style.opacity = '0.5';
+                clearAllBtn.style.pointerEvents = 'none';
+            } else {
+                selectAllBtn.style.opacity = '1';
+                selectAllBtn.style.pointerEvents = 'auto';
+                clearAllBtn.style.opacity = '1';
+                clearAllBtn.style.pointerEvents = 'auto';
+            }
+        }
+
+        // 获取星期几的名称
+        function getDayName(day) {
+            const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            return days[day];
+        }
+
+        // 显示编辑表单
+        function showEditForm(index) {
+            // 隐藏添加表单
+            document.getElementById('addForm').style.display = 'none';
+
+            // 显示编辑表单
+            const editForm = document.getElementById('editForm');
+            editForm.style.display = 'block';
+
+            // 设置编辑索引
+            document.getElementById('editIndex').value = index;
+
+            // 模拟获取当前记录数据并填充表单
+            const times = ['10:30', '14:20', '16:45'];
+            const durations = ['60', '45', '45'];
+            const contents = ['开会时间摸鱼，看了会儿微博...', '午休后继续摸鱼，刷了会儿视频...', '下班前摸鱼，看了会儿小说...'];
+
+            document.getElementById('editTime').value = times[index];
+            document.getElementById('editDuration').value = durations[index];
+            document.getElementById('editContent').value = contents[index];
+        }
+
+        // 保存编辑
+        function saveEdit() {
+            // 在实际应用中，这里会保存编辑后的数据
+            alert('记录已更新！');
+
+            // 隐藏编辑表单，显示添加表单
+            document.getElementById('editForm').style.display = 'none';
+            document.getElementById('addForm').style.display = 'block';
+        }
+
+        // 取消编辑
+        function cancelEdit() {
+            document.getElementById('editForm').style.display = 'none';
+            document.getElementById('addForm').style.display = 'block';
+        }
+
+        // 删除记录
+        function deleteRecord(index) {
+            if (confirm('确定要删除这条记录吗？')) {
+                // 在实际应用中，这里会删除对应的记录
+                alert('记录已删除！');
+            }
+        }
+    </script>
+</body>
+
+</html>
