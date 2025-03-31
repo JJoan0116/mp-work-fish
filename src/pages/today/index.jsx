@@ -4,7 +4,9 @@ import { AtModal, AtModalContent, AtModalAction, AtInputNumber, AtModalHeader, A
 import Taro from '@tarojs/taro'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import duration from 'dayjs/plugin/duration'
 dayjs.extend(isSameOrAfter)
+dayjs.extend(duration)
 import './index.scss'
 
 export default class Today extends Component {
@@ -24,6 +26,8 @@ export default class Today extends Component {
       // 当前时间和下班时间
       currentTime: '0',
       timeToOffWork: '0',
+      // 进度条状态
+      progress: 0,
       // 发薪日设置
       payDay: 10,
       // 法定节假日信息
@@ -89,13 +93,18 @@ export default class Today extends Component {
       ? thisMonthPayday.diff(today, 'day')
       : nextMonthPayday.diff(today, 'day')
     statusItems[0] = { ...statusItems[0], value: daysToPayday.toString() }
-    
+
+    // 计算距离本周六的天数
+    const saturday = today.endOf('week')
+    const daysToWeekend = saturday.diff(today, 'day')
+    statusItems[1] = { ...statusItems[1], value: daysToWeekend.toString() }
+
     // 计算距离最近节假日的天数
     const nextHoliday = holidays
       .map(holiday => ({ ...holiday, date: dayjs(holiday.date).startOf('day') }))
       .filter(holiday => dayjs(holiday.date).isSameOrAfter(today))
       .sort((a, b) => dayjs(a.date).diff(today, 'day') - dayjs(b.date).diff(today, 'day'))[0]
-    
+
     if (nextHoliday) {
       const daysToHoliday = nextHoliday.date.diff(today, 'day')
       statusItems[2] = { ...statusItems[2], value: daysToHoliday.toString() }
@@ -106,14 +115,12 @@ export default class Today extends Component {
   }
 
   updateCurrentTime() {
-    const now = new Date()
-    const offWorkTime = new Date()
-    const startWorkTime = new Date()
-    offWorkTime.setHours(18, 0, 0)
-    startWorkTime.setHours(9, 0, 0)
-    
+    const now = dayjs()
+    const offWorkTime = now.hour(18).minute(0).second(0)
+    const startWorkTime = now.hour(9).minute(0).second(0)
+
     // 如果已经下班，固定时间为00:00并清除定时器
-    if (now >= offWorkTime) {
+    if (now.isAfter(offWorkTime)) {
       if (this.timer) {
         clearInterval(this.timer)
         this.timer = null
@@ -122,34 +129,33 @@ export default class Today extends Component {
         currentTime: '00:00',
         timeToOffWork: '已下班'
       })
-      document.documentElement.style.setProperty('--progress', '1')
+      this.setState({
+        currentTime: '00:00',
+        timeToOffWork: '已下班',
+        progress: 1
+      })
       return
     }
-    
-    const hours = now.getHours().toString().padStart(2, '0')
-    const minutes = now.getMinutes().toString().padStart(2, '0')
-    
-    // 计算工作进度，如果已经下班则直接设置为100%
-    if (now >= offWorkTime) {
-      document.documentElement.style.setProperty('--progress', '1')
-    } else {
-      const totalWorkMs = offWorkTime - startWorkTime
-      const workedMs = now - startWorkTime
-      const progress = Math.max(0, Math.min(1, workedMs / totalWorkMs))
-      document.documentElement.style.setProperty('--progress', progress)
-    }
-    
+
+    // 更新当前时间显示
     this.setState({
-      currentTime: `${hours}:${minutes}`
+      currentTime: now.format('HH:mm')
     })
-    
+
+    // 计算工作进度
+    const totalWorkMs = offWorkTime.diff(startWorkTime)
+    const workedMs = now.diff(startWorkTime)
+    const progress = Math.max(0, Math.min(1, workedMs / totalWorkMs))
+    this.setState({ progress })
+    console.log('progress', progress)
+
     // 计算距离下班时间
-    const diffMs = offWorkTime - now
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
-    
+    const diffDuration = dayjs.duration(offWorkTime.diff(now))
+    const diffHours = diffDuration.hours()
+    const diffMinutes = diffDuration.minutes()
+
     this.setState({
-      timeToOffWork: now >= offWorkTime ? '已下班' : `距离下班还有${diffHours}.${Math.floor(diffMinutes / 6)}h`
+      timeToOffWork: now.isAfter(offWorkTime) ? '已下班' : `距离下班还有${diffHours}.${Math.floor(diffMinutes / 6)}h`
     })
   }
 
@@ -254,7 +260,7 @@ export default class Today extends Component {
   handleConfirm = () => {
     const { currentActivityType, inputDuration, activities, fishRecords, editingIndex } = this.state
     const duration = parseInt(inputDuration)
-    
+
     if (!duration || duration <= 0) {
       return
     }
@@ -324,9 +330,9 @@ export default class Today extends Component {
   }
 
   render() {
-    const { 
+    const {
       todayFishAmount, todaySalary, currentTime, timeToOffWork,
-      activities, statusItems, fishRecords, totalTime, showFishAmount, showSalary, isModalOpen
+      activities, statusItems, fishRecords, totalTime, showFishAmount, showSalary, isModalOpen, progress
     } = this.state
 
     return (
@@ -342,7 +348,7 @@ export default class Today extends Component {
             </View>
             <Text className='card-value'>¥ {showFishAmount ? todayFishAmount.toFixed(2) : '****'}</Text>
           </View>
-          
+
           <View className='card salary-card'>
             <View className='card-header'>
               <Text className='card-title'>今日工资收入</Text>
@@ -356,7 +362,8 @@ export default class Today extends Component {
 
         {/* 时钟区域 */}
         <View className='clock-section'>
-          <View className='clock-container'>
+          <View className='clock-container' style={{ '--progress': progress }}>
+            <View></View>
             <Text className='current-time'>{currentTime}</Text>
             <Text className='time-to-off'>{timeToOffWork}</Text>
           </View>
@@ -388,7 +395,7 @@ export default class Today extends Component {
             <Text className='record-title'>今日摸鱼记录</Text>
             <Text className='record-total'>共计: {totalTime}</Text>
           </View>
-          
+
           <View className='record-list'>
             {fishRecords.map((record, index) => (
               <AtSwipeAction
@@ -436,7 +443,7 @@ export default class Today extends Component {
             <View className='modal-buttons'>
               <AtButton
                 onClick={this.handleModalClose}>取消</AtButton>
-              <AtButton 
+              <AtButton
                  type='primary' onClick={this.handleConfirm}>确定</AtButton>
             </View>
           </AtModalAction>
