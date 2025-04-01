@@ -12,7 +12,7 @@
 
 /* 倒计时卡片样式 */
 .countdown-card {
-  background: linear-gradient(135deg, #FF9800, #F57C00);
+  background: linear-gradient(135deg, #ff9800, #f57c00);
   border-radius: 40px;
   padding: 30px;
   color: white;
@@ -25,14 +25,14 @@
     position: absolute;
     width: 30px;
     height: 30px;
-    background: #FFD700;
+    background: #ffd700;
     opacity: 0.9;
     border-radius: 50%;
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
     animation: fall 4s ease-in-out infinite;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 50%;
@@ -75,7 +75,8 @@
   }
 
   @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
       transform: translate(-50%, -50%) scale(0.5);
       opacity: 0.5;
     }
@@ -133,16 +134,20 @@
       font-size: 28px;
       color: #666;
       display: block;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
     }
 
     .salary-value {
       font-size: 48px;
       font-weight: bold;
-      color: #1E88E5;
+      color: #1e88e5;
       display: block;
 
       &.total {
-        color: #FF9800;
+        color: #ff9800;
       }
     }
   }
@@ -155,7 +160,7 @@
   background: white;
   border-radius: 36px;
   padding: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -167,7 +172,7 @@
     border-bottom: 2px solid #f0f0f0;
 
     .records-title {
-      color: #1E88E5;
+      color: #1e88e5;
       font-size: 34px;
       font-weight: 600;
       display: flex;
@@ -175,16 +180,15 @@
 
       .icon {
         margin-right: 16px;
-        padding: 16px;
-        border-radius: 50%;
-        font-size: 28px;
+        font-size: 32px;
+        margin-right: 12px;
       }
     }
 
     .add-record {
       display: inline-flex;
       align-items: center;
-      color: #1E88E5;
+      color: #1e88e5;
       font-size: 28px;
 
       .icon {
@@ -219,7 +223,7 @@
 
         .record-duration {
           font-size: 28px;
-          color: #1E88E5;
+          color: #1e88e5;
         }
       }
 
@@ -244,7 +248,7 @@
           .edit-btn,
           .delete-btn {
             font-size: 28px;
-            color: #1E88E5;
+            color: #1e88e5;
             cursor: pointer;
 
             &:hover {
@@ -257,7 +261,29 @@
           }
         }
       }
-      }
     }
   }
+}
 
+/* 弹窗样式 */
+.modal-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .at-input-number {
+    input {
+      flex: 1;
+    }
+  }
+}
+
+.modal-footer {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  border-top: 1px solid #f0f0f0;
+}
