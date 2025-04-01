@@ -1,29 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Picker } from "@tarojs/components";
+import { useSelector } from "react-redux";
 import Taro from "@tarojs/taro";
 import dayjs from "dayjs";
 import {
-  AtInput,
-  AtForm,
   AtTextarea,
   AtButton,
   AtModal,
   AtModalHeader,
   AtModalContent,
   AtModalAction,
-  AtList,
-  AtListItem,
   AtInputNumber,
 } from "taro-ui";
 import "./index.scss";
 
 const Today = () => {
-  const [settings] = useState({
-    salary: "500",
-    startTime: "09:00",
-    endTime: "18:00",
-    workdays: ["1", "2", "3", "4", "5"],
-  });
+  const settings = useSelector((state) => state.settings);
 
   // 控制薪资显示状态
   const [showFishSalary, setShowFishSalary] = useState(true);
@@ -37,7 +29,6 @@ const Today = () => {
   });
   const [progress, setProgress] = useState(0);
   const [todayFishSalary, setTodayFishSalary] = useState(0);
-  // const [todayTotalSalary, setTodayTotalSalary] = useState(0);
   const [fishRecords, setFishRecords] = useState([
     {
       id: 1,
