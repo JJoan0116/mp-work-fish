@@ -3,16 +3,9 @@ import { View, Text, Picker } from "@tarojs/components";
 import { useSelector } from "react-redux";
 import Taro from "@tarojs/taro";
 import dayjs from "dayjs";
-import {
-  AtTextarea,
-  AtButton,
-  AtModal,
-  AtModalHeader,
-  AtModalContent,
-  AtModalAction,
-  AtInputNumber,
-} from "taro-ui";
+import { Dialog, TextArea, Button, InputNumber } from "@nutui/nutui-react-taro";
 import "./index.scss";
+import { IconFont } from "@nutui/icons-react-taro";
 
 const Today = () => {
   const settings = useSelector((state) => state.settings);
@@ -170,7 +163,7 @@ const Today = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   const [formData, setFormData] = useState({
     time: "",
-    duration: "",
+    duration: 0,
     content: "",
   });
 
@@ -179,7 +172,7 @@ const Today = () => {
     setEditingRecord(null);
     setFormData({
       time: dayjs().format("HH:mm"),
-      duration: "",
+      duration: 0,
       content: "",
     });
     setShowModal(true);
@@ -389,16 +382,27 @@ const Today = () => {
       </View>
 
       {/* 添加/编辑摸鱼记录弹窗 */}
-      <AtModal isOpened={showModal} onClose={() => setShowModal(false)}>
-        <AtModalHeader>
-          {editingRecord ? "编辑摸鱼记录" : "添加摸鱼记录"}
-        </AtModalHeader>
-        <AtModalContent>
-          <View className="modal-content">
-            摸鱼时间
+      <Dialog
+        title={editingRecord ? "编辑摸鱼记录" : "添加摸鱼记录"}
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        closeOnOverlayClick
+        footer={
+          <View className="modal-footer">
+            <Button size="small" onClick={() => setShowModal(false)}>
+              取消
+            </Button>
+            <Button size="small" type="primary" onClick={handleSave}>
+              确定
+            </Button>
+          </View>
+        }
+      >
+        <View className="modal-content">
+          <View className="form-item">
+            <Text className="form-label">摸鱼时间</Text>
             <Picker
               name="time"
-              title="时间"
               mode="time"
               value={formData.time}
               onChange={(e) => handleInputChange("time", e.detail.value)}
@@ -407,38 +411,35 @@ const Today = () => {
                 {formData.time || "请选择时间"}
               </View>
             </Picker>
-            摸鱼时长(分钟)
-            <AtInputNumber
-              min={0}
-              step={1}
-              type="number"
-              value={formData.duration}
-              onChange={(value) =>
-                handleInputChange("duration", parseInt(value))
-              }
-              placeholder="请输入时长"
-            />
-            摸鱼内容
-            <AtTextarea
+          </View>
+
+          <View className="form-item">
+            <Text className="form-label">摸鱼时长(分钟)</Text>
+            <View>
+              <InputNumber
+                min={0}
+                step={1}
+                value={formData.duration}
+                onChange={(value) =>
+                  handleInputChange("duration", parseInt(value))
+                }
+                placeholder="请输入时长"
+              />
+            </View>
+          </View>
+
+          <View className="form-item">
+            <Text className="form-label">摸鱼内容</Text>
+            <TextArea
               value={formData.content}
               onChange={(value) => handleInputChange("content", value)}
               maxLength={200}
               placeholder="记录一下摸鱼内容..."
+              autoSize={{ minHeight: 80 }}
             />
           </View>
-        </AtModalContent>
-
-        <AtModalAction>
-          <View className="modal-footer">
-            <AtButton size="small" onClick={() => setShowModal(false)}>
-              取消
-            </AtButton>
-            <AtButton size="small" type="primary" onClick={handleSave}>
-              确定
-            </AtButton>
-          </View>
-        </AtModalAction>
-      </AtModal>
+        </View>
+      </Dialog>
     </View>
   );
 };

@@ -8,6 +8,13 @@
     "miniprogram": {
       "list": [
         {
+          "name": "pages/diary/index",
+          "pathName": "pages/diary/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/today/index",
           "pathName": "pages/today/index",
           "query": "",

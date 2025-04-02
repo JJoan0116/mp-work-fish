@@ -1,17 +1,17 @@
 import { Component } from "react";
 import { Provider } from "react-redux";
-import { initRem } from "./utils/rem";
+// import { initRem } from "./utils/rem";
 import store from "./store";
-import "taro-ui/dist/style/index.scss";
-import "./assets/iconfont/iconfont.css";
+import "@nutui/nutui-react-taro/dist/style.css";
 import "./app.scss";
+import "./assets/font/iconfont.css";
 
 class App extends Component {
   componentDidMount() {
     // 初始化rem适配
-    if (["h5", "weapp"].includes(process.env.TARO_ENV)) {
-      initRem();
-    }
+    // if (["h5", "weapp"].includes(process.env.TARO_ENV)) {
+    //   initRem();
+    // }
   }
 
   componentDidShow() {}

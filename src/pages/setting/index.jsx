@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text } from "@tarojs/components";
-import { AtInput, AtButton } from "taro-ui";
+// import { AtInput, AtButton } from "taro-ui";
 import "./index.scss";
 
 const Setting = ({ isOpened, onClose }) => {
@@ -52,7 +52,7 @@ const Setting = ({ isOpened, onClose }) => {
       <View className="setting-content">
         <View className="setting-item">
           <Text className="setting-label">日薪 (元)</Text>
-          <AtInput type="number" value={salary} onChange={handleSalaryChange} />
+          {/* <AtInput type="number" value={salary} onChange={handleSalaryChange} /> */}
         </View>
 
         <View className="setting-item">
@@ -105,9 +105,9 @@ const Setting = ({ isOpened, onClose }) => {
         </View>
       </View>
 
-      <AtButton type="primary" className="save-btn" onClick={handleSave}>
+      {/* <AtButton type="primary" className="save-btn" onClick={handleSave}>
         保存设置
-      </AtButton>
+      </AtButton> */}
     </View>
   );
 };
