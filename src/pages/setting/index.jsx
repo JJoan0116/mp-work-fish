@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { View, Text } from "@tarojs/components";
+import { useSelector, useDispatch } from "react-redux";
+import { setSettings } from "../../store/settings";
 import {
   Form,
   Cell,
@@ -12,27 +14,16 @@ import {
 import "./index.scss";
 import Taro from "@tarojs/taro";
 
-const getStorageValue = (key, defaultValue) => {
-  try {
-    const settings = Taro.getStorageSync("mp-work-fish-settings");
-    return settings?.[key] || defaultValue;
-  } catch (error) {
-    return defaultValue;
-  }
-};
-
 const Setting = () => {
+  const dispatch = useDispatch();
+  const settings = useSelector((state) => state.settings);
+
   // 初始化状态
-  const [salary, setSalary] = useState(() => getStorageValue("salary", "200"));
-  const [startTime, setStartTime] = useState(() =>
-    getStorageValue("startTime", "09:00")
-  );
-  const [endTime, setEndTime] = useState(() =>
-    getStorageValue("endTime", "18:00")
-  );
-  const [workdays, setWorkdays] = useState(() =>
-    getStorageValue("workdays", ["1", "2", "3", "4", "5"])
-  );
+  const [salary, setSalary] = useState(settings.salary);
+  const [startTime, setStartTime] = useState(settings.startTime);
+  const [endTime, setEndTime] = useState(settings.endTime);
+  const [workdays, setWorkdays] = useState(settings.workdays);
+
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
 
@@ -65,20 +56,12 @@ const Setting = () => {
   };
 
   const handleSave = () => {
-    console.log("保存设置", {
-      salary,
-      startTime,
-      endTime,
-      workdays,
-    });
+    const settings = { salary, startTime, endTime, workdays };
     try {
       // 保存所有设置到本地存储
-      Taro.setStorageSync("mp-work-fish-settings", {
-        salary,
-        startTime,
-        endTime,
-        workdays,
-      });
+      Taro.setStorageSync("mp-work-fish-settings", settings);
+      // 更新Redux store
+      dispatch(setSettings(settings));
 
       Taro.showToast({
         title: "设置保存成功",

@@ -208,6 +208,13 @@
     &::-webkit-scrollbar {
       display: none;
     }
+
+    .empty-state {
+      display: flex;
+      justify-content: center;
+      margin-top: 100px;
+    }
+
     .record-item {
       border-radius: 20px;
       padding: 20px 0;
@@ -272,10 +279,8 @@
   flex-direction: column;
   gap: 10px;
 
-  .at-input-number {
-    input {
-      flex: 1;
-    }
+  .h5-input.nut-inputnumber-input {
+    flex: 1;
   }
 }
 

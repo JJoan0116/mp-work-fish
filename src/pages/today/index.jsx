@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Picker } from "@tarojs/components";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Taro from "@tarojs/taro";
 import dayjs from "dayjs";
 import { Dialog, TextArea, Button, InputNumber } from "@nutui/nutui-react-taro";
+import {
+  addFishRecord,
+  updateFishRecord,
+  deleteFishRecord,
+} from "../../store/fishRecords";
 import "./index.scss";
-import { IconFont } from "@nutui/icons-react-taro";
 
 const Today = () => {
+  const dispatch = useDispatch();
   const settings = useSelector((state) => state.settings);
+  const fishRecords = useSelector((state) => state.fishRecords);
 
   // 控制薪资显示状态
   const [showFishSalary, setShowFishSalary] = useState(true);
@@ -22,26 +28,13 @@ const Today = () => {
   });
   const [progress, setProgress] = useState(0);
   const [todayFishSalary, setTodayFishSalary] = useState(0);
-  const [fishRecords, setFishRecords] = useState([
-    {
-      id: 1,
-      time: "10:30",
-      duration: 60,
-      content: "开会时间摸鱼，看了会儿微博...",
-    },
-    {
-      id: 2,
-      time: "14:20",
-      duration: 45,
-      content: "午休后继续摸鱼，刷了会儿视频...",
-    },
-    {
-      id: 3,
-      time: "16:45",
-      duration: 45,
-      content: "下班前摸鱼，看了会儿小说...",
-    },
-  ]);
+  const [showModal, setShowModal] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [formData, setFormData] = useState({
+    time: "",
+    duration: 0,
+    content: "",
+  });
 
   // 计算今日摸鱼薪资
   useEffect(() => {
@@ -159,14 +152,6 @@ const Today = () => {
     return time < 10 ? `0${time}` : time;
   };
 
-  const [showModal, setShowModal] = useState(false);
-  const [editingRecord, setEditingRecord] = useState(null);
-  const [formData, setFormData] = useState({
-    time: "",
-    duration: 0,
-    content: "",
-  });
-
   // 添加摸鱼记录
   const addFishRecord = () => {
     setEditingRecord(null);
@@ -204,18 +189,14 @@ const Today = () => {
 
     if (editingRecord) {
       // 编辑模式
-      setFishRecords((prevRecords) =>
-        prevRecords.map((record) =>
-          record.id === editingRecord.id ? { ...record, ...formData } : record
-        )
-      );
+      dispatch(updateFishRecord({ ...editingRecord, ...formData }));
     } else {
       // 新增模式
       const newRecord = {
         id: Date.now(),
         ...formData,
       };
-      setFishRecords((prevRecords) => [newRecord, ...prevRecords]);
+      dispatch(addFishRecord(newRecord));
     }
 
     setShowModal(false);
@@ -240,9 +221,7 @@ const Today = () => {
       content: "确定要删除这条摸鱼记录吗？",
       success: function (res) {
         if (res.confirm) {
-          setFishRecords((prevRecords) =>
-            prevRecords.filter((record) => record.id !== id)
-          );
+          dispatch(deleteFishRecord(id));
           Taro.showToast({
             title: "删除成功",
             icon: "success",
@@ -353,31 +332,44 @@ const Today = () => {
 
         {/* 摸鱼记录列表 */}
         <View className="record-list">
-          {fishRecords.map((record) => (
-            <View className="record-item" key={record.id}>
-              <View className="record-header">
-                <Text className="record-time">{record.time}</Text>
-                <Text className="record-duration">{record.duration} 分钟</Text>
-              </View>
-              <View className="record-content-wrapper">
-                <Text className="record-content">{record.content}</Text>
-                <View className="record-actions">
-                  <Text
-                    className="edit-btn"
-                    onClick={() => editFishRecord(record.id)}
-                  >
-                    编辑
-                  </Text>
-                  <Text
-                    className="delete-btn"
-                    onClick={() => deleteFishRecord(record.id)}
-                  >
-                    删除
-                  </Text>
-                </View>
-              </View>
+          {fishRecords.length === 0 ? (
+            <View className="empty-state" style={{ color: "#666" }}>
+              <Text style={{ fontSize: 16 }}>
+                你今天工作太努力啦，快来摸鱼吧~
+              </Text>
+              <View className="iconfont icon-keaisuopingtubiao_moyuzhu"></View>
             </View>
-          ))}
+          ) : (
+            <>
+              {fishRecords.map((record) => (
+                <View className="record-item" key={record.id}>
+                  <View className="record-header">
+                    <Text className="record-time">{record.time}</Text>
+                    <Text className="record-duration">
+                      {record.duration} 分钟
+                    </Text>
+                  </View>
+                  <View className="record-content-wrapper">
+                    <Text className="record-content">{record.content}</Text>
+                    <View className="record-actions">
+                      <Text
+                        className="edit-btn"
+                        onClick={() => editFishRecord(record.id)}
+                      >
+                        编辑
+                      </Text>
+                      <Text
+                        className="delete-btn"
+                        onClick={() => deleteFishRecord(record.id)}
+                      >
+                        删除
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </>
+          )}
         </View>
       </View>
 
@@ -422,13 +414,14 @@ const Today = () => {
             <Text className="form-label">摸鱼时长(分钟)</Text>
             <View>
               <InputNumber
+                digits={0}
                 min={0}
                 step={1}
                 value={formData.duration}
                 onChange={(value) =>
                   handleInputChange("duration", parseInt(value))
                 }
-                placeholder="请输入时长"
+                style={{ width: 120 }}
               />
             </View>
           </View>
