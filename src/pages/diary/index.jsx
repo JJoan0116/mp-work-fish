@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Image } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import "./index.scss";
-import { Calendar } from "@nutui/nutui-react-taro";
+import { CalendarCard, Popup } from "@nutui/nutui-react-taro";
 
 const Diary = () => {
   // 历史记录数据
@@ -32,7 +32,6 @@ const Diary = () => {
       salary: 90,
     },
   ]);
-
   // 日历显示状态
   const [showCalendar, setShowCalendar] = useState(false);
   // 选中的日期
@@ -52,11 +51,6 @@ const Diary = () => {
     setShowCalendar(false);
   };
 
-  // 过滤显示的记录
-  const filteredRecords = selectedDate
-    ? historyRecords.filter((record) => record.date === selectedDate)
-    : historyRecords;
-
   return (
     <View className="diary-container">
       {/* 头部 */}
@@ -72,16 +66,24 @@ const Diary = () => {
       </View>
 
       {/* 日历组件 */}
-      <Calendar
+      <Popup
         visible={showCalendar}
-        defaultValue={selectedDate}
+        position="bottom"
         onClose={() => setShowCalendar(false)}
-        onConfirm={handleDateSelect}
-      />
+      >
+        <CalendarCard
+          defaultValue={new Date()}
+          onChange={(val) => {
+            console.log("onChange", val);
+          }}
+          // value={selectedDate}
+          // onChange={handleDateSelect}
+        />
+      </Popup>
 
       {/* 历史记录列表 */}
       <View className="history-list">
-        {filteredRecords.map((record) => (
+        {historyRecords.map((record) => (
           <View
             className="history-item"
             key={record.id}

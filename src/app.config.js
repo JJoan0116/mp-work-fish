@@ -20,26 +20,26 @@ export default defineAppConfig({
       {
         pagePath: "pages/today/index",
         text: `Let's摸鱼`,
-        // iconPath: 'assets/images/home.svg',
-        // selectedIconPath: 'assets/images/home-active.svg'
+        iconPath: "assets/images/fish.png",
+        selectedIconPath: "assets/images/fish-active.png",
       },
-      {
-        pagePath: "pages/stats/index",
-        text: "摸鱼分析",
-        // iconPath: 'assets/images/stats.svg',
-        // selectedIconPath: 'assets/images/stats-active.svg'
-      },
-      {
-        pagePath: "pages/diary/index",
-        text: "摸鱼史",
-        // iconPath: 'assets/images/history.svg',
-        // selectedIconPath: 'assets/images/history-active.svg'
-      },
+      // {
+      //   pagePath: "pages/stats/index",
+      //   text: "摸鱼分析",
+      //   // iconPath: 'assets/images/stats.svg',
+      //   // selectedIconPath: 'assets/images/stats-active.svg'
+      // },
+      // {
+      //   pagePath: "pages/diary/index",
+      //   text: "摸鱼史",
+      //   // iconPath: 'assets/images/history.svg',
+      //   // selectedIconPath: 'assets/images/history-active.svg'
+      // },
       {
         pagePath: "pages/setting/index",
         text: "设置",
-        // iconPath: 'assets/images/history.svg',
-        // selectedIconPath: 'assets/images/history-active.svg'
+        iconPath: "assets/images/setting.png",
+        selectedIconPath: "assets/images/setting-active.png",
       },
     ],
   },

@@ -1,33 +1,59 @@
 import React, { useState } from "react";
 import { View, Text } from "@tarojs/components";
-// import { AtInput, AtButton } from "taro-ui";
+import {
+  Form,
+  Cell,
+  Input,
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  DatePicker,
+} from "@nutui/nutui-react-taro";
 import "./index.scss";
+import Taro from "@tarojs/taro";
 
-const Setting = ({ isOpened, onClose }) => {
-  const [salary, setSalary] = useState("500");
-  const [startTime, setStartTime] = useState("09:00");
-  const [endTime, setEndTime] = useState("18:00");
-  const [workdays, setWorkdays] = useState(["1", "2", "3", "4", "5"]);
+const getStorageValue = (key, defaultValue) => {
+  try {
+    const settings = Taro.getStorageSync("mp-work-fish-settings");
+    return settings?.[key] || defaultValue;
+  } catch (error) {
+    return defaultValue;
+  }
+};
+
+const Setting = () => {
+  // 初始化状态
+  const [salary, setSalary] = useState(() => getStorageValue("salary", "200"));
+  const [startTime, setStartTime] = useState(() =>
+    getStorageValue("startTime", "09:00")
+  );
+  const [endTime, setEndTime] = useState(() =>
+    getStorageValue("endTime", "18:00")
+  );
+  const [workdays, setWorkdays] = useState(() =>
+    getStorageValue("workdays", ["1", "2", "3", "4", "5"])
+  );
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
 
   const handleSalaryChange = (value) => {
     setSalary(value);
   };
 
-  const handleStartTimeChange = (e) => {
-    setStartTime(e.detail.value);
+  const handleStartTimeChange = (selectedTime) => {
+    const formattedTime = selectedTime.split(" ")[1];
+    setStartTime(formattedTime);
+    setShowStartPicker(false);
   };
 
-  const handleEndTimeChange = (e) => {
-    setEndTime(e.detail.value);
+  const handleEndTimeChange = (selectedTime) => {
+    const formattedTime = selectedTime.split(" ")[1];
+    setEndTime(formattedTime);
+    setShowEndPicker(false);
   };
 
-  const toggleWorkday = (day) => {
-    setWorkdays((prev) => {
-      if (prev.includes(day)) {
-        return prev.filter((d) => d !== day);
-      }
-      return [...prev, day];
-    });
+  const handleWorkdaysChange = (values) => {
+    setWorkdays(values);
   };
 
   const handleSelectAll = () => {
@@ -39,75 +65,140 @@ const Setting = ({ isOpened, onClose }) => {
   };
 
   const handleSave = () => {
-    // TODO: 保存设置
-    onClose();
+    console.log("保存设置", {
+      salary,
+      startTime,
+      endTime,
+      workdays,
+    });
+    try {
+      // 保存所有设置到本地存储
+      Taro.setStorageSync("mp-work-fish-settings", {
+        salary,
+        startTime,
+        endTime,
+        workdays,
+      });
+
+      Taro.showToast({
+        title: "设置保存成功",
+        icon: "success",
+        duration: 2000,
+      });
+    } catch (error) {
+      Taro.showToast({
+        title: "保存失败",
+        icon: "error",
+        duration: 2000,
+      });
+    }
   };
 
   return (
-    <View className="setting-drawer">
-      <View className="setting-header">
-        <Text className="setting-title">设置</Text>
-      </View>
-
-      <View className="setting-content">
-        <View className="setting-item">
-          <Text className="setting-label">日薪 (元)</Text>
-          {/* <AtInput type="number" value={salary} onChange={handleSalaryChange} /> */}
-        </View>
-
-        <View className="setting-item">
-          <Text className="setting-label">上班时间</Text>
-          {/* <Picker
-              mode='time'
+    <View className="setting-page">
+      <Form>
+        <Cell
+          title="日薪 (元)"
+          align="center"
+          extra={
+            <Input
+              type="number"
+              value={salary}
+              onChange={handleSalaryChange}
+              placeholder="请输入日薪"
+              min="0"
+            />
+          }
+        ></Cell>
+        <Cell
+          title="上班时间"
+          align="center"
+          extra={
+            <Input
+              type="text"
               value={startTime}
               onChange={handleStartTimeChange}
-            >
-              <View className='picker-value'>{startTime}</View>
-            </Picker> */}
-        </View>
+              placeholder="请输入上班时间"
+            />
+          }
+          onClick={() => setShowStartPicker(true)}
+        ></Cell>
 
-        <View className="setting-item">
-          <Text className="setting-label">下班时间</Text>
-          {/* <Picker
-              mode='time'
+        <DatePicker
+          title="选择上班时间"
+          type="hour-minutes"
+          visible={showStartPicker}
+          onClose={() => setShowStartPicker(false)}
+          onConfirm={handleStartTimeChange}
+          defaultValue={startTime}
+        />
+
+        <Cell
+          title="下班时间"
+          align="center"
+          extra={
+            <Input
+              type="text"
               value={endTime}
               onChange={handleEndTimeChange}
-            >
-              <View className='picker-value'>{endTime}</View>
-            </Picker> */}
-        </View>
+              placeholder="请输入下班时间"
+            />
+          }
+          onClick={() => setShowEndPicker(true)}
+        ></Cell>
 
-        <View className="setting-item">
-          <View className="workday-header">
-            <Text className="setting-label">工作日选择</Text>
-            <View className="workday-actions">
-              <Text className="action-btn" onClick={handleSelectAll}>
-                全选
-              </Text>
-              <Text className="action-btn" onClick={handleClearAll}>
-                清除
-              </Text>
+        <DatePicker
+          title="选择下班时间"
+          type="hour-minutes"
+          visible={showEndPicker}
+          onClose={() => setShowEndPicker(false)}
+          onConfirm={handleEndTimeChange}
+          defaultValue={endTime}
+        />
+
+        <Cell
+          title="工作日设置"
+          align="center"
+          extra={
+            <View className="workday-header">
+              <View className="workday-actions">
+                <Button
+                  size="small"
+                  type="primary"
+                  onClick={handleSelectAll}
+                  style={{ marginRight: "12px", background: "#1E88E5" }}
+                >
+                  全选
+                </Button>
+                <Button size="small" onClick={handleClearAll}>
+                  清除
+                </Button>
+              </View>
             </View>
-          </View>
+          }
+        ></Cell>
+
+        <CheckboxGroup value={workdays} onChange={handleWorkdaysChange}>
           <View className="workday-list">
             {["一", "二", "三", "四", "五", "六", "日"].map((day, index) => (
-              <View
-                key={index}
-                className={`workday-item ${
-                  workdays.includes(String(index + 1)) ? "selected" : ""
-                }`}
-                onClick={() => toggleWorkday(String(index + 1))}
-              >
+              <Checkbox key={index + 1} value={String(index + 1)}>
                 周{day}
-              </View>
+              </Checkbox>
             ))}
           </View>
-        </View>
-      </View>
+        </CheckboxGroup>
 
-      {/* <AtButton type="primary" className="save-btn" onClick={handleSave}>
-        保存设置
-      </AtButton> */}
+        <View style={{ margin: "20px" }}>
+          <Button
+            block
+            type="primary"
+            onClick={handleSave}
+            style={{ background: "#1E88E5" }}
+          >
+            保存设置
+          </Button>
+        </View>
+      </Form>
     </View>
   );
 };

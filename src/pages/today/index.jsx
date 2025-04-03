@@ -392,7 +392,12 @@ const Today = () => {
             <Button size="small" onClick={() => setShowModal(false)}>
               取消
             </Button>
-            <Button size="small" type="primary" onClick={handleSave}>
+            <Button
+              size="small"
+              type="primary"
+              onClick={handleSave}
+              style={{ background: "#1E88E5" }}
+            >
               确定
             </Button>
           </View>
