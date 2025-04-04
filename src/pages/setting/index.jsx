@@ -11,6 +11,7 @@ import {
   CheckboxGroup,
   DatePicker,
 } from "@nutui/nutui-react-taro";
+import { Eye, Marshalling } from '@nutui/icons-react-taro'
 import "./index.scss";
 import Taro from "@tarojs/taro";
 
@@ -23,13 +24,9 @@ const Setting = () => {
   const [startTime, setStartTime] = useState(settings.startTime);
   const [endTime, setEndTime] = useState(settings.endTime);
   const [workdays, setWorkdays] = useState(settings.workdays);
-
+  const [inputType, setInputType] = useState('text');
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
-
-  const handleSalaryChange = (value) => {
-    setSalary(value);
-  };
 
   const handleStartTimeChange = (selectedTime) => {
     const formattedTime = selectedTime.split(" ")[1];
@@ -84,13 +81,23 @@ const Setting = () => {
           title="日薪 (元)"
           align="center"
           extra={
-            <Input
-              type="number"
-              value={salary}
-              onChange={handleSalaryChange}
-              placeholder="请输入日薪"
-              min="0"
-            />
+            <>
+              <Input type={inputType} placeholder="请输入日薪" value={salary} onChange={(v)=>setSalary(v)}/>
+              <View
+                style={{
+                  display: 'flex',
+                  marginRight: 10,
+                  alignItems: 'center',
+                }}
+                onClick={() => setInputType(inputType === 'text' ? 'password' : 'text')}
+              >
+                {inputType === 'text' ? (
+                  <Eye color="var(--nutui-gray-7)" />
+                ) : (
+                  <Marshalling color="var(--nutui-gray-7)" />
+                )}
+              </View>
+            </>
           }
         ></Cell>
         <Cell

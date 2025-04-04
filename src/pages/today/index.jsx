@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Taro from "@tarojs/taro";
 import dayjs from "dayjs";
 import { Dialog, TextArea, Button, InputNumber } from "@nutui/nutui-react-taro";
+import { Eye, Marshalling } from '@nutui/icons-react-taro'
 import {
   addFishRecord,
   updateFishRecord,
@@ -71,8 +72,9 @@ const Today = () => {
     );
 
     // 计算摸鱼薪资
-    const fishSalary = Math.floor(
-      (totalFishMinutes / totalWorkMinutes) * parseInt(settings.salary)
+    const fishSalary = Math.min(
+      Math.floor((totalFishMinutes / totalWorkMinutes) * parseInt(settings.salary)),
+      parseInt(settings.salary)
     );
     setTodayFishSalary(fishSalary);
   }, [fishRecords, settings]);
@@ -153,7 +155,7 @@ const Today = () => {
   };
 
   // 添加摸鱼记录
-  const addFishRecord = () => {
+  const addFishRecordFunc = () => {
     setEditingRecord(null);
     setFormData({
       time: dayjs().format("HH:mm"),
@@ -215,7 +217,7 @@ const Today = () => {
   };
 
   // 删除摸鱼记录
-  const deleteFishRecord = (id) => {
+  const handleDelete = (id) => {
     Taro.showModal({
       title: "确认删除",
       content: "确定要删除这条摸鱼记录吗？",
@@ -270,8 +272,8 @@ const Today = () => {
         ></View>
         <Text className="countdown-title">
           {countdown.hours === 0 &&
-          countdown.minutes === 0 &&
-          countdown.seconds === 0
+            countdown.minutes === 0 &&
+            countdown.seconds === 0
             ? "恭喜下班"
             : "距离下班还有"}
         </Text>
@@ -290,12 +292,11 @@ const Today = () => {
         <View className="salary-item">
           <View className="salary-label">
             <Text>今日摸鱼薪资</Text>
-            <View
-              className={`iconfont ${
-                showFishSalary ? "icon-eye" : "icon-eye-close"
-              }`}
-              onClick={() => setShowFishSalary(!showFishSalary)}
-            ></View>
+            {showFishSalary ? (
+              <Eye color="var(--nutui-gray-7)" onClick={() => setShowFishSalary(!showFishSalary)} />
+            ) : (
+              <Marshalling color="var(--nutui-gray-7)" onClick={() => setShowFishSalary(!showFishSalary)} />
+            )}
           </View>
           <Text className="salary-value">
             ¥{showFishSalary ? todayFishSalary : "***"}
@@ -304,15 +305,14 @@ const Today = () => {
         <View className="salary-item">
           <View className="salary-label">
             <Text>今日总薪资</Text>
-            <View
-              className={`iconfont ${
-                showTotalSalary ? "icon-eye" : "icon-eye-close"
-              }`}
-              onClick={() => setShowTotalSalary(!showTotalSalary)}
-            ></View>
+            {showTotalSalary ? (
+              <Eye color="var(--nutui-gray-7)" onClick={() => setShowTotalSalary(!showTotalSalary)} />
+            ) : (
+              <Marshalling color="var(--nutui-gray-7)" onClick={() => setShowTotalSalary(!showTotalSalary)} />
+            )}
           </View>
           <Text className="salary-value total">
-            ¥{showTotalSalary ? settings.salary : "***"}
+            ¥{showTotalSalary ? (settings.workdays.includes(dayjs().day().toString()) ? settings.salary : 0) : "***"}
           </Text>
         </View>
       </View>
@@ -324,7 +324,7 @@ const Today = () => {
             <View className="iconfont icon-touch-fish icon-fish"></View>
             <Text>今日摸鱼记录</Text>
           </View>
-          <View className="add-record" onClick={addFishRecord}>
+          <View className="add-record" onClick={addFishRecordFunc}>
             <Text className="icon">+</Text>
             <Text>添加记录</Text>
           </View>
@@ -360,7 +360,7 @@ const Today = () => {
                       </Text>
                       <Text
                         className="delete-btn"
-                        onClick={() => deleteFishRecord(record.id)}
+                        onClick={() => handleDelete(record.id)}
                       >
                         删除
                       </Text>
@@ -416,6 +416,7 @@ const Today = () => {
               <InputNumber
                 digits={0}
                 min={0}
+                max={dayjs(`2000-01-01 ${settings.endTime}`).diff(dayjs(`2000-01-01 ${settings.startTime}`), "minute")}
                 step={1}
                 value={formData.duration}
                 onChange={(value) =>
