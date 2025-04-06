@@ -1,0 +1,307 @@
+{
+  "apiInfo": {
+    "baseUrl": "http://localhost:27017/api",
+    "version": "1.0.0",
+    "requestFormat": "application/json",
+    "responseFormat": "application/json"
+  },
+  "endpoints": [
+    {
+      "name": "查询今天记录的摸鱼事件",
+      "path": "/get-today-work-fish",
+      "method": "POST",
+      "description": "获取指定用户在指定日期的摸鱼记录列表",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": "日期，格式为 YYYY-MM-DD"
+        }
+      ],
+      "requestExample": {
+        "userId": "user123",
+        "date": "2023-11-20"
+      },
+      "responseExample": {
+        "success": true,
+        "data": [
+          {
+            "_id": "65a1b2c3d4e5f6a7b8c9d0e1",
+            "userId": "user123",
+            "date": "2023-11-20",
+            "time": "10:30",
+            "duration": 15,
+            "content": "刷抖音",
+            "createdAt": "2023-11-20T10:30:00.000Z"
+          },
+          {
+            "_id": "65a1b2c3d4e5f6a7b8c9d0e2",
+            "userId": "user123",
+            "date": "2023-11-20",
+            "time": "14:45",
+            "duration": 30,
+            "content": "看B站视频",
+            "createdAt": "2023-11-20T14:45:00.000Z"
+          }
+        ],
+        "count": 2
+      },
+      "errorResponses": [
+        {
+          "status": 400,
+          "message": "缺少必要参数：userId或date",
+          "description": "请求参数不完整"
+        }
+      ]
+    },
+    {
+      "name": "添加新的摸鱼记录",
+      "path": "/add-work-fish",
+      "method": "POST",
+      "description": "创建一条新的摸鱼记录",
+      "parameters": [
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "required": true,
+          "description": "日期，格式为 YYYY-MM-DD"
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": true,
+          "description": "摸鱼时间，格式为 HH:MM"
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": true,
+          "description": "持续时间，单位是分钟"
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": true,
+          "description": "摸鱼内容描述"
+        }
+      ],
+      "requestExample": {
+        "userId": "user123",
+        "date": "2023-11-20",
+        "time": "15:30",
+        "duration": 20,
+        "content": "玩手机游戏"
+      },
+      "responseExample": {
+        "success": true,
+        "data": {
+          "_id": "65a1b2c3d4e5f6a7b8c9d0e3",
+          "userId": "user123",
+          "date": "2023-11-20",
+          "time": "15:30",
+          "duration": 20,
+          "content": "玩手机游戏",
+          "createdAt": "2023-11-20T15:30:00.000Z"
+        },
+        "message": "摸鱼记录添加成功"
+      },
+      "errorResponses": [
+        {
+          "status": 400,
+          "message": "缺少必要参数",
+          "description": "请求参数不完整"
+        }
+      ]
+    },
+    {
+      "name": "更新摸鱼记录",
+      "path": "/update-work-fish",
+      "method": "POST",
+      "description": "根据记录ID更新摸鱼记录的内容",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "记录ID"
+        },
+        {
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "用户ID"
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "required": false,
+          "description": "日期，格式为 YYYY-MM-DD"
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "required": false,
+          "description": "摸鱼时间，格式为 HH:MM"
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "required": false,
+          "description": "持续时间，单位是分钟"
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": false,
+          "description": "摸鱼内容描述"
+        }
+      ],
+      "requestExample": {
+        "id": "65a1b2c3d4e5f6a7b8c9d0e3",
+        "userId": "user123",
+        "date": "2023-11-20",
+        "time": "15:45",
+        "duration": 25,
+        "content": "玩手机游戏并看视频"
+      },
+      "responseExample": {
+        "success": true,
+        "data": {
+          "_id": "65a1b2c3d4e5f6a7b8c9d0e3",
+          "userId": "user123",
+          "date": "2023-11-20",
+          "time": "15:45",
+          "duration": 25,
+          "content": "玩手机游戏并看视频",
+          "createdAt": "2023-11-20T15:30:00.000Z"
+        },
+        "message": "摸鱼记录更新成功"
+      },
+      "errorResponses": [
+        {
+          "status": 400,
+          "message": "缺少必要参数：id或userId",
+          "description": "请求参数不完整"
+        },
+        {
+          "status": 404,
+          "message": "找不到指定的摸鱼记录",
+          "description": "指定ID的记录不存在"
+        }
+      ]
+    },
+    {
+      "name": "删除摸鱼记录",
+      "path": "/del-work-fish",
+      "method": "POST",
+      "description": "根据记录ID删除摸鱼记录",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "记录ID"
+        }
+      ],
+      "requestExample": {
+        "id": "65a1b2c3d4e5f6a7b8c9d0e3"
+      },
+      "responseExample": {
+        "success": true,
+        "data": {
+          "_id": "65a1b2c3d4e5f6a7b8c9d0e3",
+          "userId": "user123",
+          "date": "2023-11-20",
+          "time": "15:45",
+          "duration": 25,
+          "content": "玩手机游戏并看视频",
+          "createdAt": "2023-11-20T15:30:00.000Z"
+        },
+        "message": "摸鱼记录删除成功"
+      },
+      "errorResponses": [
+        {
+          "status": 400,
+          "message": "缺少必要参数：id",
+          "description": "请求参数不完整"
+        },
+        {
+          "status": 404,
+          "message": "找不到指定的摸鱼记录",
+          "description": "指定ID的记录不存在"
+        }
+      ]
+    }
+  ],
+  "dataStructures": {
+    "workFishRecord": {
+      "properties": [
+        {
+          "name": "_id",
+          "type": "string",
+          "description": "记录唯一标识符"
+        },
+        {
+          "name": "userId",
+          "type": "string",
+          "description": "用户ID"
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "description": "日期，格式为 YYYY-MM-DD"
+        },
+        {
+          "name": "time",
+          "type": "string",
+          "description": "摸鱼时间，格式为 HH:MM"
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "description": "持续时间，单位是分钟"
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "description": "摸鱼内容描述"
+        },
+        {
+          "name": "createdAt",
+          "type": "string",
+          "description": "记录创建时间，ISO格式"
+        }
+      ]
+    }
+  },
+  "errorCodes": [
+    {
+      "status": 400,
+      "type": "参数错误",
+      "description": "缺少必要参数或参数格式错误"
+    },
+    {
+      "status": 404,
+      "type": "资源不存在",
+      "description": "指定的记录不存在"
+    },
+    {
+      "status": 500,
+      "type": "服务器错误",
+      "description": "服务器内部处理错误"
+    }
+  ]
+} 
